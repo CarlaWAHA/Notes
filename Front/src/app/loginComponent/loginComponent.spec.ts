@@ -66,7 +66,7 @@ it('submit() → stocke dans localStorage', async() => {
 
     const req = httpMock.expectOne(() => true);
     expect(req.request.method).toBe('POST'); 
-    req.flush({ username, token, roles });
+    req.flush(token);
 
     // Assert
     expect(localStorage.getItem('username')).toBe(username);
