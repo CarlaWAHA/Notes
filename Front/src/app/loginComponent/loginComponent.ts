@@ -22,18 +22,19 @@ export class LoginComponent {
   };
 
   submit() {
+  this.authService.login(this.model).subscribe({
     next: (token: string) => {
-  console.log("TOKEN :", token);
+      console.log("TOKEN :", token);
 
-  localStorage.setItem("username", this.model.username);
-  localStorage.setItem("token", token);
-  localStorage.setItem("roles", JSON.stringify(["ROLE_USER"]));
+      localStorage.setItem("username", this.model.username);
+      localStorage.setItem("token", token);
+      localStorage.setItem("roles", JSON.stringify(["ROLE_USER"]));
 
-  this.router.navigate(['/notes']);
-},
-      error: (err) => {
-        console.error('Login error:', err);
-      }
-    });
-  }
+      this.router.navigate(['/notes']);
+    },
+    error: (err) => {
+      console.error('Login error:', err);
+    }
+  });
+}
 }
