@@ -1,0 +1,12 @@
+<h2>Liste des notes</h2>
+
+<input name="title" placeholder="Titre">
+<input name="content" placeholder="Contenu">
+<button>Ajouter</button>
+
+<div *ngFor="let note of notes">
+  <h3>{{note.title}}</h3>
+  <P>{{note.content}}</P>
+</div>
+
+<button (click)="Logout()" type="submit" class="btn-logout">Logout</button>

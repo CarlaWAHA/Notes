@@ -1,0 +1,8 @@
+package com.example.model;
+
+public enum orderStatus {
+    PENDING,
+    PREPARING,
+    READY,
+    SERVED
+}
