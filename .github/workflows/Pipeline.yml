@@ -25,6 +25,7 @@ jobs:
 
       - name: Upload backend coverage report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: jacoco-report
           path: demo/target/site/jacoco
@@ -52,6 +53,7 @@ jobs:
 
       - name: Upload frontend coverage report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: lcov-report
           path: Front/coverage/lcov-report
@@ -88,14 +90,18 @@ jobs:
 
       - name: Start frontend
         run: |
-          npm run start &
-          sleep 20
+          npm run start -- --host 0.0.0.0 --port 4200 &
+          sleep 30
         working-directory: Front
 
       - name: Run E2E tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: Front
+          install: false
+          browser: chrome
+          spec: cypress/e2e/app/**/*.cy.ts
+          config: baseUrl=http://localhost:4200
 
   build-backend:
     runs-on: ubuntu-latest
