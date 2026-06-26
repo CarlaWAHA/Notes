@@ -28,7 +28,8 @@ export class LoginComponent {
 
         localStorage.setItem("username", this.model.username);
         localStorage.setItem("token", token);
-
+        localStorage.setItem("roles", JSON.stringify(["ROLE_USER"]));
+        
         this.router.navigate(['/notes']);
       },
       error: (err) => {
