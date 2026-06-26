@@ -7,7 +7,7 @@ import { authGuard } from './guards/authGuard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'notes',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
