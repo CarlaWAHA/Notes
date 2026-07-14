@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UserRequest;
+import com.example.demo.dto.UserRequestDto;
 import com.example.demo.model.User;
 import com.example.demo.service.TokenService;
 import com.example.demo.service.UserService;
@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createStudent(@Valid @RequestBody UserRequest request) {
+    public ResponseEntity<User> createStudent(@Valid @RequestBody UserRequestDto request) {
         return userService.createStudent(request.getUsername(), request.getPassword())
                 .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(sanitize(user)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());

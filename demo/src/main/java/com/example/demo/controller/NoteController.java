@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.NoteRequest;
+import com.example.demo.dto.NoteRequestDto;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Note;
 import com.example.demo.service.NoteService;
@@ -37,7 +37,7 @@ public class NoteController {
     }
 
     @PostMapping
-    public ResponseEntity<Note> createNote(@Valid @RequestBody NoteRequest noteRequest) {
+    public ResponseEntity<Note> createNote(@Valid @RequestBody NoteRequestDto noteRequest) {
         Note created = noteService.createNote(noteRequest.getTitle(), noteRequest.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
