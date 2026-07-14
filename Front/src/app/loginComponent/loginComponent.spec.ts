@@ -57,17 +57,19 @@ it('submit() → stocke dans localStorage', async() => {
     const username = 'user';
     const token = 'secure-token-123';
     const roles = ['ROLE_USER'];
+  const userId = 42;
 
     component.model.username = 'user';
     component.model.password = 'password';
 
     component.submit();
 
-    const req = httpMock.expectOne('http://localhost:8080/auth/login');
+  const req = httpMock.expectOne('http://localhost:8080/api/login');
     expect(req.request.method).toBe('POST');
-    req.flush({ token, roles });
+  req.flush({ token, roles, userId, username });
 
     expect(localStorage.getItem('username')).toBe(username);
+  expect(localStorage.getItem('userId')).toBe(String(userId));
     expect(localStorage.getItem('token')).toBe(token);
     expect(localStorage.getItem('roles')).toBe(JSON.stringify(roles));
 
