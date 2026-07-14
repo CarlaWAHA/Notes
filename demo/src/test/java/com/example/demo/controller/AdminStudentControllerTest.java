@@ -55,7 +55,6 @@ class AdminStudentControllerTest {
     void testCreateStudent() {
         List<String> ueCodes = List.of("STA103");
         
-        when(userService.createStudent("student@test.com", "password123")).thenReturn(Optional.of(testStudent));
         when(studentService.createStudent(testStudent, ueCodes)).thenReturn(Optional.of(testStudentProfile));
 
         Optional<Student> result = studentService.createStudent(testStudent, ueCodes);

@@ -56,8 +56,6 @@ class AuthControllerTest {
         String token = UUID.randomUUID().toString();
 
         when(userService.findByUsername("admin@notes.com")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("12345678", "$2a$10$hashedPassword")).thenReturn(true);
-        when(tokenService.createToken(testUser)).thenReturn(token);
 
         // Simuler login
         Optional<User> user = userService.findByUsername("admin@notes.com");
@@ -133,7 +131,6 @@ class AuthControllerTest {
         student.setId(2L);
 
         when(userService.findByUsername("student@test.com")).thenReturn(Optional.of(student));
-        when(passwordEncoder.matches("password123", "$2a$10$studentHash")).thenReturn(true);
 
         Optional<User> user = userService.findByUsername("student@test.com");
         assertTrue(user.isPresent());
@@ -144,7 +141,6 @@ class AuthControllerTest {
     @DisplayName("Admin peut se connecter avec rôle ROLE_ADMIN")
     void testAdminLogin() {
         when(userService.findByUsername("admin@notes.com")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches("12345678", testUser.getPassword())).thenReturn(true);
 
         Optional<User> user = userService.findByUsername("admin@notes.com");
         assertTrue(user.isPresent());

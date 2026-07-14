@@ -116,7 +116,6 @@ class GradeServiceTest {
     @Test
     @DisplayName("Mettre à jour note existante")
     void testUpdateExistingGrade() {
-        when(gradeRepository.findByStudentAndUe(testStudent, testUE)).thenReturn(Optional.of(testGrade));
         testGrade.setValeur(18.5);
         when(gradeRepository.save(any(Grade.class))).thenReturn(testGrade);
 
