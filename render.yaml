@@ -1,0 +1,148 @@
+services:
+  - type: web
+    name: notes-backend
+    runtime: docker
+    region: frankfurt
+    plan: free
+    branch: master
+    dockerfilePath: ./demo/Dockerfile
+    dockerContext: ./demo
+    healthCheckPath: /actuator/health
+    autoDeployTrigger: checksPass
+
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: notes-database
+          property: host
+
+      - key: DB_PORT
+        fromDatabase:
+          name: notes-database
+          property: port
+
+      - key: DB_NAME
+        fromDatabase:
+          name: notes-database
+          property: database
+
+      - key: DB_USER
+        fromDatabase:
+          name: notes-database
+          property: user
+
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: notes-database
+          property: password
+
+      - key: DDL_AUTO
+        value: update
+
+      - key: SHOW_SQL
+        value: "false"
+
+      - key: DB_MAX_POOL_SIZE
+        value: "5"
+
+      - key: DB_MIN_IDLE
+        value: "1"
+
+      - key: FRONTEND_ORIGIN
+        fromService:
+          type: web
+          name: notes-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+
+    buildFilter:
+      paths:
+        - demo/**
+        - render.yaml
+
+  - type: web
+    name: notes-frontend
+    runtime: docker
+    region: frankfurt
+    plan: free
+    branch: master
+    dockerfilePath: ./Front/Dockerfile
+    dockerContext: ./Front
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: notes-backend
+          envVarKey: RENDER_EXTERNAL_URL
+
+      - key: NGINX_ENVSUBST_FILTER
+        value: "^(PORT|BACKEND_URL)$"
+
+    buildFilter:
+      paths:
+        - Front/**
+        - render.yaml
+
+  - type: web
+    name: notes-prometheus
+    runtime: docker
+    region: frankfurt
+    plan: free
+    branch: master
+    dockerfilePath: ./monitoring/prometheus/Dockerfile
+    dockerContext: ./monitoring
+    healthCheckPath: /-/healthy
+    autoDeployTrigger: checksPass
+
+    envVars:
+      - key: BACKEND_METRICS_HOST
+        fromService:
+          type: web
+          name: notes-backend
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+
+    buildFilter:
+      paths:
+        - monitoring/**
+        - demo/**
+        - render.yaml
+
+  - type: web
+    name: notes-grafana
+    runtime: docker
+    region: frankfurt
+    plan: free
+    branch: master
+    dockerfilePath: ./monitoring/grafana/Dockerfile
+    dockerContext: ./monitoring
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+
+    envVars:
+      - key: GF_SECURITY_ADMIN_USER
+        value: admin
+
+      - key: GF_SECURITY_ADMIN_PASSWORD
+        value: change-me-now
+
+      - key: PROMETHEUS_URL
+        fromService:
+          type: web
+          name: notes-prometheus
+          envVarKey: RENDER_EXTERNAL_URL
+
+    buildFilter:
+      paths:
+        - monitoring/**
+        - render.yaml
+
+databases:
+  - name: notes-database
+    databaseName: notes_db
+    user: notes_user
+    region: frankfurt
+    plan: free
+    postgresMajorVersion: "15"
+    ipAllowList: []
