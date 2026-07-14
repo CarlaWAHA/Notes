@@ -55,20 +55,18 @@ describe('LoginComponent', () => {
 it('submit() → stocke dans localStorage', async() => {
     // Arrange
     const username = 'user';
-    const token = 'jwt-123';
+    const token = 'secure-token-123';
     const roles = ['ROLE_USER'];
 
-    component.model.username = "user";
+    component.model.username = 'user';
     component.model.password = 'password';
 
-    // Act
     component.submit();
 
-    const req = httpMock.expectOne(() => true);
-    expect(req.request.method).toBe('POST'); 
-    req.flush(token);
+    const req = httpMock.expectOne('http://localhost:8080/auth/login');
+    expect(req.request.method).toBe('POST');
+    req.flush({ token, roles });
 
-    // Assert
     expect(localStorage.getItem('username')).toBe(username);
     expect(localStorage.getItem('token')).toBe(token);
     expect(localStorage.getItem('roles')).toBe(JSON.stringify(roles));

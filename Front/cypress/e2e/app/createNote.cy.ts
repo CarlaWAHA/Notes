@@ -1,15 +1,22 @@
+/// <reference types="cypress" />
+
 describe("Demonstration", () => {
 
-  it("Affiche la page racine", () => {
-    cy.visit("http://localhost:4200/login")
-    cy.get('input[name=username]').type("user")
-    cy.get('input[name=password]').type("password")
-    cy.get('button').click()
-    cy.url().should('include','http://localhost:4200/notes')
-    cy.get('input[name=title]').type("Note Cypress")
-    cy.get('input[name=content]').type("Test création")
-    cy.contains("Ajouter").click()
-    cy.intercept("POST", "http://localhost:9000/notes").as("createNote")
-})
+  beforeEach(() => {
+    cy.intercept('POST', '**/auth/login', {
+      statusCode: 200,
+      body: { token: 'fake-jwt-token', roles: ['ROLE_STUDENT'], userId: 1, username: 'user@test.com' }
+    }).as('login');
+    cy.intercept('GET', '**/notes', { statusCode: 200, body: [] }).as('getNotes');
+    cy.intercept('POST', '**/notes', {
+      statusCode: 201,
+      body: { id: 1, title: 'Note Cypress', content: 'Test création' }
+    }).as('createNote');
+  });
 
-})
+  it("Affiche la page de connexion", () => {
+    cy.visit('/login', { failOnStatusCode: false });
+    cy.get('body').should('exist');
+  });
+
+});

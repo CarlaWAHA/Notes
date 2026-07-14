@@ -1,18 +1,30 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './homeComponent/homeComponent';
+import { AdminDashboardComponent } from './adminDashboard/adminDashboard';
+import { StudentDashboardComponent } from './studentDashboard/studentDashboard';
 import { noteListComponent } from './noteListComponent/noteListComponent';
 import { NoteDetailComponent } from './note-detail-component/note-detail-component';
-import { LoginComponent } from './loginComponent/loginComponent';
 import { authGuard } from './guards/authGuard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'home',
     pathMatch: 'full',
   },
   {
-    path: 'login',
-    component: LoginComponent
+    path: 'home',
+    component: HomeComponent
+  },
+  {
+    path: 'admin',
+    component: AdminDashboardComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'student',
+    component: StudentDashboardComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'notes',
@@ -26,6 +38,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'notes'
+    redirectTo: 'home'
   }
 ];

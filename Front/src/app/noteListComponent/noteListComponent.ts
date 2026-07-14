@@ -1,5 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { noteService } from '../Services/note.service';
 import { NoteModel } from '../models/note';
 import { Router } from '@angular/router';
@@ -7,37 +9,86 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-note-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './noteListComponent.html',
   styleUrls: ['./noteListComponent.css']
 })
 export class noteListComponent implements OnInit {
 
   private noteService = inject(noteService);
-   private router = inject(Router);
+  private router = inject(Router);
 
   notes: NoteModel[] = [];
+  newTitle = '';
+  newContent = '';
+  errorMessage = '';
+  loading = false;
 
   ngOnInit(): void {
-    console.log("ngOnInit called");
-    console.log("Component loaded");
+    this.loadNotes();
+  }
+
+  loadNotes(): void {
+    this.loading = true;
+    this.errorMessage = '';
 
     this.noteService.getAllNotes().subscribe({
       next: (data) => {
-        console.log("DATA FROM API:", data);
         this.notes = data;
+        this.loading = false;
       },
-      error: (err) => console.error("API ERROR:", err)
+      error: (err) => {
+        console.error('API ERROR:', err);
+        this.errorMessage = 'Impossible de charger les notes.';
+        this.loading = false;
+      }
     });
   }
 
-  logout() {
+  addNote(): void {
+    if (!this.newTitle.trim() || !this.newContent.trim()) {
+      this.errorMessage = 'Le titre et le contenu sont obligatoires.';
+      return;
+    }
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("roles");
+    this.noteService.createNote({ title: this.newTitle, content: this.newContent }).subscribe({
+      next: () => {
+        this.newTitle = '';
+        this.newContent = '';
+        this.errorMessage = '';
+        this.loadNotes();
+      },
+      error: (err) => {
+        console.error('Create error:', err);
+        this.errorMessage = 'Impossible de créer la note : vérifiez le titre et le contenu.';
+      }
+    });
+  }
 
+  deleteNote(id: number): void {
+    this.errorMessage = '';
+    this.noteService.deleteNoteById(id).subscribe({
+      next: () => this.loadNotes(),
+      error: (err) => {
+        console.error('Delete error:', err);
+        this.errorMessage = 'Impossible de supprimer la note.';
+      }
+    });
+  }
+
+  isAdmin(): boolean {
+    try {
+      const roles = JSON.parse(localStorage.getItem('roles') || '[]');
+      return roles.includes('ROLE_ADMIN');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('roles');
     this.router.navigate(['/login']);
-
   }
 }
