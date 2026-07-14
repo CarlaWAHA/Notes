@@ -54,6 +54,9 @@ services:
           name: notes-frontend
           envVarKey: RENDER_EXTERNAL_URL
 
+      - key: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: http://notes-tempo:4318/v1/traces
+
     buildFilter:
       paths:
         - demo/**
@@ -132,6 +135,28 @@ services:
           type: web
           name: notes-prometheus
           envVarKey: RENDER_EXTERNAL_URL
+
+      - key: TEMPO_URL
+        fromService:
+          type: web
+          name: notes-tempo
+          envVarKey: RENDER_EXTERNAL_URL
+
+    buildFilter:
+      paths:
+        - monitoring/**
+        - render.yaml
+
+  - type: web
+    name: notes-tempo
+    runtime: docker
+    region: frankfurt
+    plan: free
+    branch: master
+    dockerfilePath: ./monitoring/tempo/Dockerfile
+    dockerContext: ./monitoring
+    healthCheckPath: /ready
+    autoDeployTrigger: checksPass
 
     buildFilter:
       paths:

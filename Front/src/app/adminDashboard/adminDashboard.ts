@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StudentService } from '../Services/studentService';
 import { GradeService } from '../Services/gradeService';
@@ -153,6 +153,8 @@ import { UE } from '../models/ue';
   styles: []
 })
 export class AdminDashboardComponent implements OnInit {
+  private readonly platformId = inject(PLATFORM_ID);
+
   activeTab: 'manage-students' | 'assign-grades' = 'manage-students';
   students: Student[] = [];
   selectedStudentId: number | null = null;
@@ -172,6 +174,10 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const roles = localStorage.getItem('roles');
     if (!roles?.includes('ROLE_ADMIN')) {
       window.location.href = '/';

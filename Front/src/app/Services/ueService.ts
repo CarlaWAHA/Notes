@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UE } from '../models/ue';
+import { environment } from '../../environment/environment.production';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UEService {
-  private apiUrl = 'http://localhost:8080/api/ues';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

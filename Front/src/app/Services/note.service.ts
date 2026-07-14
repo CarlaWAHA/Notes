@@ -2,15 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NoteModel } from '../models/note';
-import { NoteRequest } from '../models/note-request';
-
+import { environment } from '../../environment/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class noteService {
 
   private http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/notes';
+  private readonly apiUrl = environment.apiUrl;
 
   getAllNotes(): Observable<NoteModel[]> {
     return this.http.get<NoteModel[]>(this.apiUrl);
@@ -19,12 +18,7 @@ export class noteService {
   getNoteById(id: number): Observable<NoteModel> {
     return this.http.get<NoteModel>(`${this.apiUrl}/${id}`);
   }
-
-  createNote(note: NoteRequest): Observable<NoteModel> {
-    return this.http.post<NoteModel>(this.apiUrl, note);
-  }
-
-  deleteNoteById(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+   deleteNoteById(id: number) {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

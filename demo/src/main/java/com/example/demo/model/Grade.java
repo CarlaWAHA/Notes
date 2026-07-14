@@ -1,11 +1,8 @@
 package com.example.demo.model;
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "grades", uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "ue_id"}))
-@NoArgsConstructor
-@AllArgsConstructor
 public class Grade {
 
     @Id
@@ -22,6 +19,17 @@ public class Grade {
 
     @Column(nullable = false)
     private Double valeur;
+
+    protected Grade() {
+        // Required by JPA
+    }
+
+    public Grade(Long id, Student student, UE ue, Double valeur) {
+        this.id = id;
+        this.student = student;
+        this.ue = ue;
+        this.valeur = valeur;
+    }
 
     public Grade(Student student, UE ue, Double valeur) {
         this.student = student;

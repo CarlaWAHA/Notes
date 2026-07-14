@@ -1,16 +1,12 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "students")
-@NoArgsConstructor
-@AllArgsConstructor
 public class Student {
 
     @Id
@@ -28,6 +24,16 @@ public class Student {
         inverseJoinColumns = @JoinColumn(name = "ue_id")
     )
     private Set<UE> ues = new HashSet<>();
+
+    protected Student() {
+        // Required by JPA
+    }
+
+    public Student(Long id, User user, Set<UE> ues) {
+        this.id = id;
+        this.user = user;
+        this.ues = ues;
+    }
 
     public Student(User user) {
         this.user = user;

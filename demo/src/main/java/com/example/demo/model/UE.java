@@ -1,13 +1,9 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ues")
-@NoArgsConstructor
-@AllArgsConstructor
 public class UE {
 
     @Id
@@ -19,6 +15,16 @@ public class UE {
 
     @Column(nullable = false)
     private String titre;
+
+    protected UE() {
+        // Required by JPA
+    }
+
+    public UE(Long id, String code, String titre) {
+        this.id = id;
+        this.code = code;
+        this.titre = titre;
+    }
 
     public UE(String code, String titre) {
         this.code = code;

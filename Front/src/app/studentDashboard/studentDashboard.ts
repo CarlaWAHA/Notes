@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { StudentService } from '../Services/studentService';
 import { GradeService } from '../Services/gradeService';
 import { Student } from '../models/student';
@@ -137,6 +137,8 @@ import { UE } from '../models/ue';
   styles: []
 })
 export class StudentDashboardComponent implements OnInit {
+  private readonly platformId = inject(PLATFORM_ID);
+
   isLoading: boolean = true;
   currentUsername: string = '';
   studentUEs: UE[] = [];
@@ -149,6 +151,11 @@ export class StudentDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      this.isLoading = false;
+      return;
+    }
+
     const roles = localStorage.getItem('roles');
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');

@@ -37,7 +37,8 @@ export class LoginComponent {
     this.authService.login(this.model).subscribe({
       next: (res) => {
         console.log('Login successful:', res);
-        localStorage.setItem('username', this.model.username);
+        localStorage.setItem('username', res.username);
+        localStorage.setItem('userId', String(res.userId));
         localStorage.setItem('token', res.token);
         localStorage.setItem('roles', JSON.stringify(res.roles || ['ROLE_USER']));
         this.isLoading = false;

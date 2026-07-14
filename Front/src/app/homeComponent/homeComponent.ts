@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { LoginComponent } from '../loginComponent/loginComponent';
 import { RegisterComponent } from '../registerComponent/registerComponent';
 
@@ -49,9 +49,15 @@ import { RegisterComponent } from '../registerComponent/registerComponent';
   styles: []
 })
 export class HomeComponent implements OnInit {
+  private readonly platformId = inject(PLATFORM_ID);
+
   activeTab: 'login' | 'register' = 'login';
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     // Check if user is already logged in
     const token = localStorage.getItem('token');
     if (token) {

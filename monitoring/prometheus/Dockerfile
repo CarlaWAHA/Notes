@@ -1,11 +1,7 @@
 FROM prom/prometheus:latest
 
-USER root
-
-RUN apk add --no-cache gettext
-
 COPY prometheus/prometheus.render.yml.template /etc/prometheus/prometheus.render.yml.template
 
 USER nobody
 
-CMD ["/bin/sh", "-c", "envsubst '$BACKEND_METRICS_HOST' < /etc/prometheus/prometheus.render.yml.template > /etc/prometheus/prometheus.yml && /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.enable-lifecycle"]
+CMD ["/bin/sh", "-c", "cp /etc/prometheus/prometheus.render.yml.template /etc/prometheus/prometheus.yml && sed -i \"s|__BACKEND_METRICS_HOST__|${BACKEND_METRICS_HOST}|g\" /etc/prometheus/prometheus.yml && /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.enable-lifecycle"]
