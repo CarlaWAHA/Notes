@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -37,25 +38,17 @@ class GradeServiceTest {
 
     @BeforeEach
     void setup() {
-        User testUser = new User();
+        User testUser = new User("etudiant@test.com", "password123", Collections.singletonList("ROLE_STUDENT"));
         testUser.setId(1L);
-        testUser.setUsername("etudiant@test.com");
 
-        testStudent = new Student();
+        testStudent = new Student(testUser);
         testStudent.setId(1L);
-        testStudent.setUser(testUser);
-        testStudent.setUes(new HashSet<>());
 
-        testUE = new UE();
+        testUE = new UE("STA103", "Statistiques");
         testUE.setId(1L);
-        testUE.setCode("STA103");
-        testUE.setTitre("Statistiques");
 
-        testGrade = new Grade();
+        testGrade = new Grade(testStudent, testUE, 16.5);
         testGrade.setId(1L);
-        testGrade.setStudent(testStudent);
-        testGrade.setUe(testUE);
-        testGrade.setValeur(16.5);
     }
 
     @Test

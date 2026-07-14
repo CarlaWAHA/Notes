@@ -42,11 +42,8 @@ class AuthControllerTest {
 
     @BeforeEach
     void setup() {
-        testUser = new User();
+        testUser = new User("admin@notes.com", "$2a$10$hashedPassword", Collections.singletonList("ROLE_ADMIN"));
         testUser.setId(1L);
-        testUser.setUsername("admin@notes.com");
-        testUser.setPassword("$2a$10$hashedPassword");
-        testUser.setRoles(Collections.singletonList("ROLE_ADMIN"));
 
         loginRequest = new AuthRequestDto();
         loginRequest.setUsername("admin@notes.com");
@@ -132,11 +129,8 @@ class AuthControllerTest {
     @Test
     @DisplayName("Étudiant peut se connecter avec rôle ROLE_STUDENT")
     void testStudentLogin() {
-        User student = new User();
+        User student = new User("student@test.com", "$2a$10$studentHash", Collections.singletonList("ROLE_STUDENT"));
         student.setId(2L);
-        student.setUsername("student@test.com");
-        student.setPassword("$2a$10$studentHash");
-        student.setRoles(Collections.singletonList("ROLE_STUDENT"));
 
         when(userService.findByUsername("student@test.com")).thenReturn(Optional.of(student));
         when(passwordEncoder.matches("password123", "$2a$10$studentHash")).thenReturn(true);

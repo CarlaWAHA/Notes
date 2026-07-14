@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,21 +40,14 @@ class AdminStudentControllerTest {
 
     @BeforeEach
     void setup() {
-        testStudent = new User();
+        testStudent = new User("student@test.com", "password123", Collections.singletonList("ROLE_STUDENT"));
         testStudent.setId(1L);
-        testStudent.setUsername("student@test.com");
-        testStudent.setPassword("password123");
-        testStudent.setRoles(Collections.singletonList("ROLE_STUDENT"));
 
-        testStudentProfile = new Student();
+        testStudentProfile = new Student(testStudent);
         testStudentProfile.setId(1L);
-        testStudentProfile.setUser(testStudent);
-        testStudentProfile.setUes(new HashSet<>());
 
-        testUE = new UE();
+        testUE = new UE("STA103", "Statistiques Avancées");
         testUE.setId(1L);
-        testUE.setCode("STA103");
-        testUE.setTitre("Statistiques Avancées");
     }
 
     @Test

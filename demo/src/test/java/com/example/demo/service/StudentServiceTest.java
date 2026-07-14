@@ -41,20 +41,14 @@ class StudentServiceTest {
 
     @BeforeEach
     void setup() {
-        testUser = new User();
+        testUser = new User("etudiant@test.com", "password123", Collections.singletonList("ROLE_STUDENT"));
         testUser.setId(1L);
-        testUser.setUsername("etudiant@test.com");
-        testUser.setRoles(Collections.singletonList("ROLE_STUDENT"));
 
-        testStudent = new Student();
+        testStudent = new Student(testUser);
         testStudent.setId(1L);
-        testStudent.setUser(testUser);
-        testStudent.setUes(new HashSet<>());
 
-        testUE = new UE();
+        testUE = new UE("STA103", "Statistiques Avancées");
         testUE.setId(1L);
-        testUE.setCode("STA103");
-        testUE.setTitre("Statistiques Avancées");
     }
 
     @Test
@@ -132,7 +126,7 @@ class StudentServiceTest {
     @Test
     @DisplayName("Vérifier qu'étudiant n'a pas d'UE au départ")
     void testStudentStartsWithoutUEs() {
-        Student newStudent = new Student();
+        Student newStudent = new Student(testUser);
         newStudent.setUser(testUser);
         newStudent.setUes(new HashSet<>());
 
@@ -142,10 +136,8 @@ class StudentServiceTest {
     @Test
     @DisplayName("Ajouter plusieurs UEs à un étudiant")
     void testAddMultipleUEs() {
-        UE ue2 = new UE();
+        UE ue2 = new UE("STA102", "Statistiques Intermédiaires");
         ue2.setId(2L);
-        ue2.setCode("STA102");
-        ue2.setTitre("Statistiques Intermédiaires");
 
         testStudent.addUE(testUE);
         testStudent.addUE(ue2);

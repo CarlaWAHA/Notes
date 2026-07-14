@@ -34,11 +34,8 @@ class UserServiceTest {
 
     @BeforeEach
     void setup() {
-        testUser = new User();
+        testUser = new User("admin@notes.com", "$2a$10$hashedPassword123", Collections.singletonList("ROLE_ADMIN"));
         testUser.setId(1L);
-        testUser.setUsername("admin@notes.com");
-        testUser.setPassword("$2a$10$hashedPassword123");
-        testUser.setRoles(Collections.singletonList("ROLE_ADMIN"));
     }
 
     @Test
