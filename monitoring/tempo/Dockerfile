@@ -1,5 +1,10 @@
 FROM grafana/tempo:latest
 
 COPY tempo/tempo.render.yml.template /etc/tempo/tempo.render.yml.template
+COPY tempo/start-tempo.sh /usr/local/bin/start-tempo.sh
 
-CMD ["/bin/sh", "-c", "cp /etc/tempo/tempo.render.yml.template /etc/tempo/tempo.yml && sed -i \"s|__PORT__|${PORT}|g\" /etc/tempo/tempo.yml && /tempo -config.file=/etc/tempo/tempo.yml"]
+USER root
+
+RUN chmod +x /usr/local/bin/start-tempo.sh
+
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/start-tempo.sh"]
