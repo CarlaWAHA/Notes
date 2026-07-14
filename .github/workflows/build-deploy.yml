@@ -51,11 +51,19 @@ jobs:
         working-directory: ./demo
         run: mvn clean package -B -DskipTests
         continue-on-error: false
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/notes_db_test
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
 
       - name: Run Backend Unit Tests
         working-directory: ./demo
         run: mvn test -B --fail-at-end
         continue-on-error: true
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/notes_db_test
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
 
       - name: Generate Test Report
         working-directory: ./demo
