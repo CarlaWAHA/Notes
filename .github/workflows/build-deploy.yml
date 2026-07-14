@@ -51,19 +51,11 @@ jobs:
         working-directory: ./demo
         run: mvn clean package -B -DskipTests
         continue-on-error: false
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/notes_db_test
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: postgres
 
       - name: Run Backend Unit Tests
         working-directory: ./demo
         run: mvn test -B --fail-at-end
         continue-on-error: true
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/notes_db_test
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: postgres
 
       - name: Generate Test Report
         working-directory: ./demo
@@ -131,12 +123,18 @@ jobs:
 
       - name: Run Frontend Unit Tests
         working-directory: ./Front
-        run: npm test -- --watch=false --code-coverage --browsers=ChromeHeadless
+        run: npm test -- --watch=false --code-coverage
         continue-on-error: true
 
       - name: Run Frontend E2E Tests
         working-directory: ./Front
-        run: npm run e2e -- --headless
+        run: |
+          # Serve static build files (no SSR, proper text/html) for Cypress
+          # PostgreSQL NOT needed: all API calls are mocked with cy.intercept()
+          npm install -g http-server
+          http-server dist/notes/browser -p 4200 --silent &
+          sleep 5
+          npx cypress run --headless --browser chrome
         continue-on-error: true
 
       - name: Upload Frontend Coverage
