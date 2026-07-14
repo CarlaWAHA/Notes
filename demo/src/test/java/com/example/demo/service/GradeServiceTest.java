@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,15 +129,11 @@ class GradeServiceTest {
     @Test
     @DisplayName("Obtenir toutes notes d'un étudiant - multiple UEs")
     void testGetAllGradesForStudent() {
-        Grade grade2 = new Grade();
-        grade2.setId(2L);
-        grade2.setStudent(testStudent);
-        
-        UE ue2 = new UE();
+        UE ue2 = new UE("STA102", "Statistiques Intermédiaires");
         ue2.setId(2L);
-        ue2.setCode("STA102");
-        grade2.setUe(ue2);
-        grade2.setValeur(14.0);
+        
+        Grade grade2 = new Grade(testStudent, ue2, 14.0);
+        grade2.setId(2L);
 
         List<Grade> grades = List.of(testGrade, grade2);
         when(gradeRepository.findByStudent(testStudent)).thenReturn(grades);
@@ -153,8 +148,8 @@ class GradeServiceTest {
     @Test
     @DisplayName("Moyenne des notes d'un étudiant")
     void testCalculateAverageGrade() {
-        Grade grade2 = new Grade();
-        grade2.setValeur(14.0);
+        UE ue2 = new UE("STA102", "Statistiques Intermédiaires");
+        Grade grade2 = new Grade(testStudent, ue2, 14.0);
         
         List<Grade> grades = List.of(testGrade, grade2);
         

@@ -140,8 +140,7 @@ class AdminStudentControllerTest {
     @DisplayName("Vérifier qu'étudiant peut pas créer autre étudiant")
     void testStudentCantCreateOtherStudent() {
         // Seul admin avec @PreAuthorize(hasRole('ROLE_ADMIN')) peut créer
-        User studentUser = new User();
-        studentUser.setRoles(Collections.singletonList("ROLE_STUDENT"));
+        User studentUser = new User("student@test.com", "password123", Collections.singletonList("ROLE_STUDENT"));
 
         assertFalse(studentUser.getRoles().contains("ROLE_ADMIN"));
     }
@@ -149,11 +148,9 @@ class AdminStudentControllerTest {
     @Test
     @DisplayName("Email unique pour chaque étudiant")
     void testStudentEmailUniqueness() {
-        User student1 = new User();
-        student1.setUsername("student1@test.com");
+        User student1 = new User("student1@test.com", "password123", Collections.singletonList("ROLE_STUDENT"));
 
-        User student2 = new User();
-        student2.setUsername("student2@test.com");
+        User student2 = new User("student2@test.com", "password123", Collections.singletonList("ROLE_STUDENT"));
 
         assertNotEquals(student1.getUsername(), student2.getUsername());
     }
