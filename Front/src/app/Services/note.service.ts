@@ -18,6 +18,11 @@ export class noteService {
   getNoteById(id: number): Observable<NoteModel> {
     return this.http.get<NoteModel>(`${this.apiUrl}/${id}`);
   }
+
+  createNote(payload: { title: string; content: string }): Observable<NoteModel> {
+    return this.http.post<NoteModel>(this.apiUrl, payload);
+  }
+
    deleteNoteById(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }

@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { noteService } from '../Services/note.service';
 import { NoteModel } from '../models/note';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-note-list',
@@ -38,7 +39,7 @@ export class noteListComponent implements OnInit {
         this.notes = data;
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('API ERROR:', err);
         this.errorMessage = 'Impossible de charger les notes.';
         this.loading = false;
@@ -59,7 +60,7 @@ export class noteListComponent implements OnInit {
         this.errorMessage = '';
         this.loadNotes();
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Create error:', err);
         this.errorMessage = 'Impossible de créer la note : vérifiez le titre et le contenu.';
       }
@@ -70,7 +71,7 @@ export class noteListComponent implements OnInit {
     this.errorMessage = '';
     this.noteService.deleteNoteById(id).subscribe({
       next: () => this.loadNotes(),
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Delete error:', err);
         this.errorMessage = 'Impossible de supprimer la note.';
       }
