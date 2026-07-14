@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { noteListComponent } from './noteListComponent';
 import { noteService } from '../Services/note.service';
-import { Router, provideRouter } from '@angular/router';
+import { provideRouter } from '@angular/router';
 
 describe('noteListComponent', () => {
   let component: noteListComponent;
@@ -22,7 +22,6 @@ describe('noteListComponent', () => {
       imports: [noteListComponent],
       providers: [
         { provide: noteService, useValue: noteServiceMock },
-        { provide: Router, useValue: { navigate: jest.fn() } },
         provideRouter([])
       ]
     }).compileComponents();
