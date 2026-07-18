@@ -42,7 +42,7 @@ export class LoginComponent {
         localStorage.setItem('token', res.token);
         localStorage.setItem('roles', JSON.stringify(res.roles || ['ROLE_USER']));
         this.isLoading = false;
-        this.router.navigate(['/notes']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Login error:', err);

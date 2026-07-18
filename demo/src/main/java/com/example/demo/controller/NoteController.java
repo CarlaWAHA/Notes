@@ -42,6 +42,13 @@ public class NoteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Note> updateNote(@PathVariable Long id, @Valid @RequestBody NoteRequestDto noteRequest) {
+        Note updated = noteService.updateNote(id, noteRequest.getTitle(), noteRequest.getContent())
+                .orElseThrow(() -> new ResourceNotFoundException("Note introuvable avec l'id " + id));
+        return ResponseEntity.ok(updated);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
         boolean deleted = noteService.deleteNote(id);

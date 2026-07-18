@@ -15,14 +15,19 @@ import { UE } from '../models/ue';
     <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <!-- Navigation Header -->
       <nav class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
           <h1 class="text-2xl font-bold">👨‍💼 Tableau de Bord Admin</h1>
-          <button
-            (click)="logout()"
-            class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg font-semibold transition"
-          >
-            Déconnexion
-          </button>
+          <div class="flex items-center gap-3">
+            <a href="/home" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-semibold transition">Accueil</a>
+            <a href="/admissions" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-semibold transition">Admissions</a>
+            <a href="/admin-space" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-semibold transition">Admin</a>
+            <button
+              (click)="logout()"
+              class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg font-semibold transition"
+            >
+              Déconnexion
+            </button>
+          </div>
         </div>
       </nav>
 

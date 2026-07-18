@@ -5,6 +5,12 @@ import { StudentDashboardComponent } from './studentDashboard/studentDashboard';
 import { noteListComponent } from './noteListComponent/noteListComponent';
 import { NoteDetailComponent } from './note-detail-component/note-detail-component';
 import { authGuard } from './guards/authGuard';
+import { AboutComponent } from './aboutComponent/aboutComponent';
+import { ProgramsComponent } from './programsComponent/programsComponent';
+import { ContactComponent } from './contactComponent/contactComponent';
+import { AdmissionsComponent } from './admissionsComponent/admissionsComponent';
+import { AdminSpaceComponent } from './adminSpaceComponent/adminSpaceComponent';
+import { adminGuard } from './guards/adminGuard';
 
 export const routes: Routes = [
   {
@@ -17,9 +23,30 @@ export const routes: Routes = [
     component: HomeComponent
   },
   {
+    path: 'about',
+    component: AboutComponent
+  },
+  {
+    path: 'programs',
+    component: ProgramsComponent
+  },
+  {
+    path: 'admissions',
+    component: AdmissionsComponent
+  },
+  {
+    path: 'contact',
+    component: ContactComponent
+  },
+  {
+    path: 'admin-space',
+    component: AdminSpaceComponent,
+    canActivate: [adminGuard]
+  },
+  {
     path: 'admin',
     component: AdminDashboardComponent,
-    canActivate: [authGuard]
+    canActivate: [adminGuard]
   },
   {
     path: 'student',
@@ -29,12 +56,12 @@ export const routes: Routes = [
   {
     path: 'notes',
     component: noteListComponent,
-    canActivate: [authGuard]
+    canActivate: [adminGuard]
   },
   {
     path: 'notes/:id',
     component: NoteDetailComponent,
-    canActivate: [authGuard]
+    canActivate: [adminGuard]
   },
   {
     path: '**',

@@ -23,6 +23,9 @@ export class noteListComponent implements OnInit {
   notes: NoteModel[] = [];
   newTitle = '';
   newContent = '';
+  editingId: number | null = null;
+  editingTitle = '';
+  editingContent = '';
   errorMessage = '';
   loading = false;
 
@@ -67,6 +70,44 @@ export class noteListComponent implements OnInit {
     });
   }
 
+  startEdit(note: NoteModel): void {
+    this.editingId = note.id;
+    this.editingTitle = note.title;
+    this.editingContent = note.content;
+    this.errorMessage = '';
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.editingTitle = '';
+    this.editingContent = '';
+  }
+
+  saveEdit(): void {
+    if (this.editingId === null) {
+      return;
+    }
+
+    if (!this.editingTitle.trim() || !this.editingContent.trim()) {
+      this.errorMessage = 'Le titre et le contenu sont obligatoires.';
+      return;
+    }
+
+    this.noteService.updateNote(this.editingId, {
+      title: this.editingTitle,
+      content: this.editingContent
+    }).subscribe({
+      next: () => {
+        this.cancelEdit();
+        this.loadNotes();
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Update error:', err);
+        this.errorMessage = 'Impossible de modifier le cours.';
+      }
+    });
+  }
+
   deleteNote(id: number): void {
     this.errorMessage = '';
     this.noteService.deleteNoteById(id).subscribe({
@@ -99,6 +140,6 @@ export class noteListComponent implements OnInit {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('roles');
-    this.router.navigate(['/login']);
+    this.router.navigate(['/home']);
   }
 }

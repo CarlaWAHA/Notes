@@ -94,6 +94,14 @@ spring.datasource.username=postgres
 spring.datasource.password=postgres
 ```
 
+Définissez explicitement les variables d'environnement (recommandé) :
+
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/notes_db
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=postgres
+```
+
 ### 4️⃣ Démarrer le Backend (Terminal 1)
 
 ```bash

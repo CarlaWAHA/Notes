@@ -27,6 +27,18 @@ public class NoteService {
         return note;
     }
 
+    public Optional<Note> updateNote(Long id, String title, String content) {
+        Optional<Note> existing = getNoteById(id);
+        if (existing.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Note note = existing.get();
+        note.setTitle(title);
+        note.setContent(content);
+        return Optional.of(note);
+    }
+
     public boolean deleteNote(Long id) {
         return notes.removeIf(note -> note.getId().equals(id));
     }

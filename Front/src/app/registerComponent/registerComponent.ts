@@ -12,32 +12,32 @@ import { UE } from '../models/ue';
   template: `
     <div class="space-y-6">
       <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-slate-900">Créer un Compte Étudiant</h2>
-        <p class="text-slate-600 text-sm mt-2">⚠️ Seul l'admin peut créer des comptes étudiants</p>
+        <h2 class="text-2xl font-bold text-black">Creation d'un compte etudiant</h2>
+        <p class="mt-2 text-sm text-neutral-600">Seul un administrateur autorise peut creer les comptes.</p>
       </div>
 
       <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+        <label class="mb-2 block text-sm font-semibold text-neutral-800">Email</label>
         <input
           type="email"
           [(ngModel)]="email"
           placeholder="etudiant@exemple.com"
-          class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-slate-50 hover:bg-white"
+          class="w-full rounded-xl border border-red-200 bg-red-50/40 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
       <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Mot de passe</label>
+        <label class="mb-2 block text-sm font-semibold text-neutral-800">Mot de passe</label>
         <input
           type="password"
           [(ngModel)]="password"
           placeholder="••••••••"
-          class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-slate-50 hover:bg-white"
+          class="w-full rounded-xl border border-red-200 bg-red-50/40 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
       <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Sélectionner les UE à suivre</label>
+        <label class="mb-2 block text-sm font-semibold text-neutral-800">Selectionner les UE a suivre</label>
         <div class="space-y-2">
           <div *ngFor="let ue of ues" class="flex items-center">
             <input
@@ -45,9 +45,9 @@ import { UE } from '../models/ue';
               [id]="'ue-' + ue.code"
               [(ngModel)]="selectedUEs[ue.code]"
               [ngModelOptions]="{standalone: true}"
-              class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              class="h-4 w-4 rounded text-red-600 focus:ring-red-500"
             />
-            <label [for]="'ue-' + ue.code" class="ml-2 text-sm text-slate-700 cursor-pointer">
+            <label [for]="'ue-' + ue.code" class="ml-2 cursor-pointer text-sm text-neutral-700">
               {{ ue.code }} - {{ ue.titre }}
             </label>
           </div>
@@ -57,19 +57,19 @@ import { UE } from '../models/ue';
       <button
         (click)="registerStudent()"
         [disabled]="isLoading"
-        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <span *ngIf="!isLoading">Créer un Compte Étudiant</span>
-        <span *ngIf="isLoading">⏳ Création en cours...</span>
+        <span *ngIf="!isLoading">Creer un compte etudiant</span>
+        <span *ngIf="isLoading">Creation en cours...</span>
       </button>
 
-      <div *ngIf="successMessage" class="bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-lg">
-        <p class="font-semibold">✅ Succès</p>
+      <div *ngIf="successMessage" class="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-emerald-700">
+        <p class="font-semibold">Succes</p>
         <p class="text-sm mt-1">{{ successMessage }}</p>
       </div>
 
-      <div *ngIf="errorMessage" class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
-        <p class="font-semibold">❌ Erreur</p>
+      <div *ngIf="errorMessage" class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-red-700">
+        <p class="font-semibold">Erreur</p>
         <p class="text-sm mt-1">{{ errorMessage }}</p>
       </div>
     </div>

@@ -1,69 +1,56 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-  <div class="w-full max-w-md">
-    <div class="bg-white rounded-lg shadow-2xl p-8 border border-slate-200">
-      <div class="text-center mb-8">
-        <div class="text-5xl mb-3">📝</div>
-        <h1 class="text-3xl font-bold text-slate-900">Notes App</h1>
-        <p class="text-slate-600 mt-2">Gestionnaire de notes sécurisé</p>
-      </div>
+<div class="space-y-5">
+  <div class="text-center">
+    <h2 class="text-2xl font-black text-black">Connexion a votre espace</h2>
+    <p class="mt-1 text-sm text-neutral-600">Accedez au tableau admin ou etudiant selon votre role.</p>
+  </div>
 
-      <form (ngSubmit)="submit()" #loginForm="ngForm" class="space-y-5">
-
-        <div>
-          <label for="username" class="block text-sm font-semibold text-slate-700 mb-2">Email ou Nom d'utilisateur</label>
-          <input
-            type="text"
-            id="username"
-            [(ngModel)]="model.username"
-            name="username"
-            placeholder="admin@notes.com"
-            aria-required="true"
-            required
-            class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-slate-50 hover:bg-white"
-          />
-        </div>
-
-        <div>
-          <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Mot de passe</label>
-          <input
-            type="password"
-            id="password"
-            [(ngModel)]="model.password"
-            name="password"
-            placeholder="••••••••"
-            aria-required="true"
-            required
-            class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-slate-50 hover:bg-white"
-          />
-        </div>
-
-        <button
-          type="submit"
-          [disabled]="isLoading"
-          class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-        >
-          <span *ngIf="!isLoading">Se connecter</span>
-          <span *ngIf="isLoading">⏳ Connexion en cours...</span>
-        </button>
-
-        <div *ngIf="errorMessage" class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg" role="alert">
-          <p class="font-semibold">❌ Erreur</p>
-          <p class="text-sm mt-1">{{ errorMessage }}</p>
-        </div>
-
-      </form>
-
-      <div class="mt-8 pt-6 border-t border-slate-200">
-        <p class="text-xs text-slate-500 text-center mb-3">Compte de démonstration</p>
-        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-          <p class="text-sm text-blue-900"><strong>Email:</strong> admin@notes.com</p>
-          <p class="text-sm text-blue-900"><strong>Mot de passe:</strong> 12345678</p>
-        </div>
-      </div>
+  <form (ngSubmit)="submit()" #loginForm="ngForm" class="space-y-4">
+    <div>
+      <label for="username" class="mb-2 block text-sm font-semibold text-neutral-800">Email ou nom d'utilisateur</label>
+      <input
+        type="text"
+        id="username"
+        [(ngModel)]="model.username"
+        name="username"
+        placeholder="admin@trustcampus.org"
+        aria-required="true"
+        required
+        class="w-full rounded-xl border border-red-200 bg-red-50/40 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
+      />
     </div>
 
-    <p class="text-center text-slate-600 text-xs mt-6">
-      © 2026 Notes App. Tous droits réservés.
-    </p>
+    <div>
+      <label for="password" class="mb-2 block text-sm font-semibold text-neutral-800">Mot de passe</label>
+      <input
+        type="password"
+        id="password"
+        [(ngModel)]="model.password"
+        name="password"
+        placeholder="••••••••"
+        aria-required="true"
+        required
+        class="w-full rounded-xl border border-red-200 bg-red-50/40 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
+      />
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="isLoading"
+      class="flex w-full items-center justify-center rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      <span *ngIf="!isLoading">Se connecter</span>
+      <span *ngIf="isLoading">Connexion en cours...</span>
+    </button>
+
+    <div *ngIf="errorMessage" class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-red-700" role="alert">
+      <p class="font-semibold">Erreur</p>
+      <p class="mt-1 text-sm">{{ errorMessage }}</p>
+    </div>
+  </form>
+
+  <div class="rounded-xl border border-red-100 bg-red-50/70 p-4">
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-red-700">Compte de demonstration</p>
+    <p class="text-sm text-neutral-800"><strong>Email:</strong> admin@trust.com</p>
+    <p class="text-sm text-neutral-800"><strong>Mot de passe:</strong> 12345678</p>
   </div>
 </div>

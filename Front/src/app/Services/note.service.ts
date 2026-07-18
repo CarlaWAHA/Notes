@@ -9,21 +9,25 @@ import { environment } from '../../environment/environment';
 export class noteService {
 
   private http = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl;
+  private readonly notesUrl = `${environment.apiUrl.replace(/\/api$/, '')}/notes`;
 
   getAllNotes(): Observable<NoteModel[]> {
-    return this.http.get<NoteModel[]>(this.apiUrl);
+    return this.http.get<NoteModel[]>(this.notesUrl);
   }
 
   getNoteById(id: number): Observable<NoteModel> {
-    return this.http.get<NoteModel>(`${this.apiUrl}/${id}`);
+    return this.http.get<NoteModel>(`${this.notesUrl}/${id}`);
   }
 
   createNote(payload: { title: string; content: string }): Observable<NoteModel> {
-    return this.http.post<NoteModel>(this.apiUrl, payload);
+    return this.http.post<NoteModel>(this.notesUrl, payload);
+  }
+
+  updateNote(id: number, payload: { title: string; content: string }): Observable<NoteModel> {
+    return this.http.put<NoteModel>(`${this.notesUrl}/${id}`, payload);
   }
 
    deleteNoteById(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.notesUrl}/${id}`);
   }
 }

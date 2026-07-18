@@ -1,3 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap');
+
+:root {
+	--tc-red: #dc2626;
+	--tc-red-soft: #fee2e2;
+	--tc-white: #ffffff;
+	--tc-black: #111111;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+}
+
+body {
+	font-family: 'Manrope', 'Segoe UI', sans-serif;
+	color: var(--tc-black);
+	background: linear-gradient(145deg, #fff8f8 0%, #ffffff 60%, #ffe9ec 100%);
+}
