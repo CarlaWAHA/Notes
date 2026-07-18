@@ -15,3 +15,25 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+beforeEach(() => {
+	cy.intercept('POST', '**/api/login', {
+		statusCode: 200,
+		body: {
+			token: 'fake-jwt-token',
+			roles: ['ROLE_STUDENT'],
+			userId: 1,
+			username: 'user@test.com'
+		}
+	}).as('login');
+
+	cy.intercept('GET', '**/notes', {
+		statusCode: 200,
+		body: []
+	}).as('getNotes');
+
+	cy.intercept('GET', '**/api/content/**', (req) => {
+		const key = req.url.split('/api/content/')[1]?.split('?')[0] || 'content';
+		req.reply({ statusCode: 200, body: { key, value: 'Contenu de test' } });
+	});
+});

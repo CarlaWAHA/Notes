@@ -23,7 +23,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: notes_db_test
         options: >-
-          --health-cmd "pg_isready -U postgres -d notes_db"
+          --health-cmd "pg_isready -U postgres -d notes_db_test"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -123,7 +123,7 @@ jobs:
 
       - name: Run Frontend Unit Tests
         working-directory: ./Front
-        run: npm test -- --watch=false --code-coverage
+        run: npm run test:coverage
         continue-on-error: true
 
       - name: Run Frontend E2E Tests

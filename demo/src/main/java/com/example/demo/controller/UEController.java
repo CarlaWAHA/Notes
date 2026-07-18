@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ues")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 public class UEController {
 
     private final UERepository ueRepository;

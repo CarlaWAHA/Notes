@@ -14,7 +14,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin/students")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminStudentController {
 

@@ -30,4 +30,15 @@ class NoteServiceTest {
         assertTrue(service.deleteNote(created.getId()));
         assertTrue(service.getNoteById(created.getId()).isEmpty());
     }
+
+    @Test
+    void shouldUpdateExistingNote() {
+        NoteService service = new NoteService();
+
+        Note created = service.createNote("Titre", "Contenu");
+        Note updated = service.updateNote(created.getId(), "Nouveau titre", "Nouveau contenu").orElseThrow();
+
+        assertEquals("Nouveau titre", updated.getTitle());
+        assertEquals("Nouveau contenu", updated.getContent());
+    }
 }

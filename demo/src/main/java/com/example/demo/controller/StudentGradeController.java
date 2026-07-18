@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/student/grades")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 @PreAuthorize("hasRole('STUDENT')")
 public class StudentGradeController {
 

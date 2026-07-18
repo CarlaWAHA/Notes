@@ -57,6 +57,27 @@ services:
       - key: OTEL_EXPORTER_OTLP_ENDPOINT
         value: http://notes-tempo:4318/v1/traces
 
+      - key: METRICS_APPLICATION_NAME
+        value: notes-backend
+
+      - key: METRICS_ENVIRONMENT
+        value: production
+
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+
+      - key: MAIL_PORT
+        value: "587"
+
+      - key: MAIL_USERNAME
+        value: no-reply@trustcampus.org
+
+      - key: MAIL_PASSWORD
+        sync: false
+
+      - key: CONTACT_RECIPIENT
+        value: contact@trustcampus.org
+
     buildFilter:
       paths:
         - demo/**
@@ -128,7 +149,7 @@ services:
         value: admin
 
       - key: GF_SECURITY_ADMIN_PASSWORD
-        value: change-me-now
+        sync: false
 
       - key: PROMETHEUS_URL
         fromService:

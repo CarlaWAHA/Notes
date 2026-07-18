@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/notes")
-@CrossOrigin(origins = "http://localhost:4200")
 @Validated
 public class NoteController {
 
