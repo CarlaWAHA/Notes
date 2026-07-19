@@ -21,9 +21,15 @@ public class UserService {
     }
 
     private void initializeAdmin() {
-        Optional<User> existingAdmin = userRepository.findByUsername("admin@notes.com");
+        ensureAdminAccount("admin@trust.com");
+        // Keep legacy account for backward compatibility with existing users/tests.
+        ensureAdminAccount("admin@notes.com");
+    }
+
+    private void ensureAdminAccount(String username) {
+        Optional<User> existingAdmin = userRepository.findByUsername(username);
         if (existingAdmin.isEmpty()) {
-            User admin = new User("admin@notes.com", passwordEncoder.encode("12345678"), List.of("ROLE_ADMIN"));
+            User admin = new User(username, passwordEncoder.encode("12345678"), List.of("ROLE_ADMIN"));
             userRepository.save(admin);
         }
     }
