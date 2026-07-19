@@ -44,7 +44,7 @@ class UserServiceTest {
     @Test
     @DisplayName("Créer utilisateur étudiant avec succès")
     void testCreateUser() {
-        when(userRepository.findByUsername("student@test.com")).thenReturn(Optional.empty());
+        when(userRepository.findByUsernameIgnoreCase("student@test.com")).thenReturn(Optional.empty());
         when(passwordEncoder.encode("12345678")).thenReturn("$2a$10$encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
@@ -120,7 +120,7 @@ class UserServiceTest {
         User newStudent = new User("newuser@test.com", expectedEncoded, Collections.singletonList("ROLE_STUDENT"));
         newStudent.setId(2L);
         
-        when(userRepository.findByUsername("newuser@test.com")).thenReturn(Optional.empty());
+        when(userRepository.findByUsernameIgnoreCase("newuser@test.com")).thenReturn(Optional.empty());
         when(passwordEncoder.encode(rawPassword)).thenReturn(expectedEncoded);
         when(userRepository.save(any(User.class))).thenReturn(newStudent);
 
