@@ -9,6 +9,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
+  const url = req.url;
+  const isPublicLogin = req.method === 'POST' && /\/api\/login(\?|$)/.test(url);
+  const isPublicContentRead = req.method === 'GET' && /\/api\/content\//.test(url);
+
+  if (isPublicLogin || isPublicContentRead) {
+    return next(req);
+  }
+
   const token = localStorage.getItem('token');
 
   if (token) {

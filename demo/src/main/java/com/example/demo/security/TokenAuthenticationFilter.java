@@ -42,8 +42,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         Optional<User> user = tokenService.findByToken(token);
         
         if (user.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token d'authentification invalide");
+            // Invalid token: continue without authentication so public endpoints still work.
+            SecurityContextHolder.clearContext();
+            filterChain.doFilter(request, response);
             return;
         }
 
