@@ -11,6 +11,8 @@ import { ContactComponent } from './contactComponent/contactComponent';
 import { AdmissionsComponent } from './admissionsComponent/admissionsComponent';
 import { AdminSpaceComponent } from './adminSpaceComponent/adminSpaceComponent';
 import { adminGuard } from './guards/adminGuard';
+import { AdminStudentFormComponent } from './adminStudentFormComponent/adminStudentFormComponent';
+import { AdminUeComponent } from './adminUeComponent/adminUeComponent';
 
 export const routes: Routes = [
   {
@@ -46,6 +48,21 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminDashboardComponent,
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/students/new',
+    component: AdminStudentFormComponent,
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/students/:id/edit',
+    component: AdminStudentFormComponent,
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/ues',
+    component: AdminUeComponent,
     canActivate: [adminGuard]
   },
   {

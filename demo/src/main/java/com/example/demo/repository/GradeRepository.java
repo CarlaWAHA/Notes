@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface GradeRepository extends JpaRepository<Grade, Long> {
     List<Grade> findByStudent(Student student);
     Optional<Grade> findByStudentAndUe(Student student, UE ue);
+    void deleteByStudent(Student student);
+    void deleteByUe(UE ue);
 }

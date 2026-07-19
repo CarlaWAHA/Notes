@@ -24,6 +24,14 @@ export class StudentService {
     return this.http.get<Student>(`${this.apiUrl}/admin/students/${id}`);
   }
 
+  updateStudent(id: number, request: any): Observable<Student> {
+    return this.http.put<Student>(`${this.apiUrl}/admin/students/${id}`, request);
+  }
+
+  deleteStudent(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/admin/students/${id}`);
+  }
+
   addUEToStudent(studentId: number, ueCode: string): Observable<Student> {
     return this.http.post<Student>(`${this.apiUrl}/admin/students/${studentId}/ues/${ueCode}`, {});
   }

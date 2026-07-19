@@ -58,6 +58,31 @@ public class AdminStudentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody CreateStudentRequest request) {
+        if (request.getUsername() == null || request.getUsername().isEmpty() ||
+            request.getUeCodes() == null || request.getUeCodes().isEmpty()) {
+            return ResponseEntity.badRequest().body("Username and at least one UE are required");
+        }
+
+        try {
+            return studentService.updateStudent(id, request.getUsername(), request.getPassword(), request.getUeCodes())
+                    .<ResponseEntity<?>>map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+        if (!studentService.deleteStudent(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{studentId}/ues/{ueCode}")
     public ResponseEntity<Student> addUEToStudent(@PathVariable Long studentId, @PathVariable String ueCode) {
         return studentService.addUEToStudent(studentId, ueCode)
