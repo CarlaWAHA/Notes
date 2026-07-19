@@ -38,7 +38,7 @@ public class AdminStudentController {
 
         Optional<User> createdUser = userService.createStudent(username, password);
         if (createdUser.isEmpty()) {
-            return ResponseEntity.badRequest().body("Student username is invalid or already exists");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Student username already exists");
         }
 
         Optional<Student> createdStudent = studentService.createStudent(createdUser.get(), request.getUeCodes());

@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { StudentService } from '../Services/studentService';
 import { UEService } from '../Services/ueService';
 import { UE } from '../models/ue';
+import { Student } from '../models/student';
 
 @Component({
   selector: 'app-admin-student-create',
@@ -71,6 +72,7 @@ export class AdminStudentCreateComponent implements OnInit {
   password = '';
   selectedUeCodes: string[] = [];
   availableUEs: UE[] = [];
+  existingUsernames = new Set<string>();
   isSaving = false;
   message = '';
 
@@ -85,6 +87,19 @@ export class AdminStudentCreateComponent implements OnInit {
       },
       error: () => {
         this.message = 'Impossible de charger les UE.';
+      }
+    });
+
+    this.studentService.getAllStudents().subscribe({
+      next: (students: Student[]) => {
+        this.existingUsernames = new Set(
+          students
+            .map((student) => (student.user?.username || '').trim().toLowerCase())
+            .filter((username) => username.length > 0)
+        );
+      },
+      error: () => {
+        // Non-blocking: backend will still validate uniqueness.
       }
     });
   }
@@ -105,8 +120,15 @@ export class AdminStudentCreateComponent implements OnInit {
   }
 
   createStudent(): void {
-    if (!this.username.trim() || !this.password.trim() || this.selectedUeCodes.length === 0) {
+    const normalizedUsername = this.username.trim().toLowerCase();
+
+    if (!normalizedUsername || !this.password.trim() || this.selectedUeCodes.length === 0) {
       this.message = 'Username, mot de passe et au moins une UE sont obligatoires.';
+      return;
+    }
+
+    if (this.existingUsernames.has(normalizedUsername)) {
+      this.message = 'Ce username existe deja. Choisissez un autre compte etudiant.';
       return;
     }
 
@@ -114,18 +136,27 @@ export class AdminStudentCreateComponent implements OnInit {
     this.message = '';
 
     this.studentService.createStudent({
-      username: this.username.trim(),
+      username: normalizedUsername,
       password: this.password,
       ueCodes: this.selectedUeCodes
     }).subscribe({
       next: () => {
         this.isSaving = false;
-        this.router.navigate(['/admin']);
+        this.router.navigate(['/admin']).then((ok) => {
+          if (!ok && isPlatformBrowser(this.platformId)) {
+            window.location.href = '/admin';
+          }
+        });
       },
       error: (err: HttpErrorResponse) => {
         this.isSaving = false;
         if (err.status === 401 || err.status === 403) {
           this.message = 'Session admin invalide ou expiree. Deconnectez-vous puis reconnectez-vous avec admin@trust.com.';
+          return;
+        }
+
+        if (err.status === 409) {
+          this.message = 'Ce username existe deja. Choisissez un autre compte etudiant.';
           return;
         }
 
