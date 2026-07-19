@@ -20,7 +20,7 @@ RUN if [ -f /usr/share/nginx/html/index.csr.html ]; then mv /usr/share/nginx/htm
 	&& test -f /usr/share/nginx/html/index.html
 
 ENV PORT=10000
-ENV BACKEND_URL=https://notes-backend.onrender.com
+ENV BACKEND_URL=https://notes-backend-4duu.onrender.com
 ENV NGINX_ENVSUBST_FILTER="^(PORT|BACKEND_URL)$"
 
 EXPOSE 10000
