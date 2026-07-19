@@ -37,12 +37,18 @@ export class LoginComponent {
     this.authService.login(this.model).subscribe({
       next: (res) => {
         console.log('Login successful:', res);
+        const roles = res.roles || ['ROLE_USER'];
         localStorage.setItem('username', res.username);
         localStorage.setItem('userId', String(res.userId));
         localStorage.setItem('token', res.token);
-        localStorage.setItem('roles', JSON.stringify(res.roles || ['ROLE_USER']));
+        localStorage.setItem('roles', JSON.stringify(roles));
         this.isLoading = false;
-        this.router.navigate(['/home']);
+        if (roles.includes('ROLE_ADMIN')) {
+          this.router.navigate(['/admin-space']);
+          return;
+        }
+
+        this.router.navigate(['/student']);
       },
       error: (err) => {
         console.error('Login error:', err);
