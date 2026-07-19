@@ -27,7 +27,7 @@ export class LoginComponent {
 
   submit() {
     const normalizedUsername = this.model.username.trim().toLowerCase();
-    const normalizedPassword = this.model.password;
+    const normalizedPassword = this.model.password.trim();
 
     if (!normalizedUsername || !normalizedPassword) {
       this.errorMessage = 'Veuillez remplir tous les champs.';

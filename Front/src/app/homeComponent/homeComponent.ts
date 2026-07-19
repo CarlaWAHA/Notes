@@ -55,22 +55,6 @@ import { EditableTextComponent } from '../editableTextComponent/editableTextComp
           </div>
         </div>
       </section>
-
-      <section class="mx-auto grid w-full max-w-7xl gap-4 px-4 pb-12 md:grid-cols-3 md:px-8">
-        <article class="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
-          <h2 class="text-lg font-bold text-black">Admin uniquement</h2>
-          <p class="mt-2 text-sm text-neutral-700">Le CRUD des etudiants, UE et notes reste reserve aux utilisateurs administrateurs.</p>
-        </article>
-        <article class="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
-          <h2 class="text-lg font-bold text-black">Etudiant en lecture</h2>
-          <p class="mt-2 text-sm text-neutral-700">Chaque etudiant consulte ses UE, ses inscriptions et ses resultats depuis son espace personnel.</p>
-        </article>
-        <article class="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
-          <h2 class="text-lg font-bold text-black">Parcours adaptatif</h2>
-          <p class="mt-2 text-sm text-neutral-700">Les credits ECTS valides sont conserves pour accelerer l'obtention du diplome via la VES.</p>
-        </article>
-      </section>
-
       <footer class="border-t border-red-100 bg-white py-5 text-center text-xs text-neutral-600">
         © 2026 Trust Campus. Theme clair, moderne et centre sur la reussite etudiante.
       </footer>
