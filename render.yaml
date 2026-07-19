@@ -7,7 +7,7 @@ services:
     branch: master
     dockerfilePath: ./demo/Dockerfile
     dockerContext: ./demo
-    healthCheckPath: /actuator/health
+    healthCheckPath: /actuator/health/liveness
     autoDeployTrigger: checksPass
 
     envVars:
