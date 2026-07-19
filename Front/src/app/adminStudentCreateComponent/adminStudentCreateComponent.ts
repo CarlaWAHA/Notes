@@ -30,6 +30,7 @@ import { Student } from '../models/student';
             <div>
               <label class="mb-2 block text-sm font-semibold">Nom d'utilisateur</label>
               <input [(ngModel)]="username" type="text" placeholder="etudiant@trust.com" class="w-full rounded-lg border border-red-200 bg-red-50/40 px-3 py-2 outline-none focus:border-red-500" />
+              <p class="mt-2 text-xs text-neutral-600">Le username doit etre unique (ex: etudiant001@trust.com).</p>
             </div>
             <div>
               <label class="mb-2 block text-sm font-semibold">Mot de passe</label>
@@ -53,6 +54,9 @@ import { Student } from '../models/student';
               <span *ngIf="isSaving">Creation...</span>
             </button>
             <button (click)="resetForm()" class="rounded-lg border border-black px-4 py-2 font-semibold hover:border-red-600 hover:text-red-600">Reinitialiser</button>
+            <button *ngIf="suggestedUsername" (click)="useSuggestedUsername()" class="rounded-lg border border-red-300 bg-white px-4 py-2 font-semibold text-red-700 hover:bg-red-50">
+              Utiliser: {{ suggestedUsername }}
+            </button>
           </div>
 
           <div *ngIf="message" class="mt-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{{ message }}</div>
@@ -73,6 +77,7 @@ export class AdminStudentCreateComponent implements OnInit {
   selectedUeCodes: string[] = [];
   availableUEs: UE[] = [];
   existingUsernames = new Set<string>();
+  suggestedUsername = '';
   isSaving = false;
   message = '';
 
@@ -121,6 +126,7 @@ export class AdminStudentCreateComponent implements OnInit {
 
   createStudent(): void {
     const normalizedUsername = this.username.trim().toLowerCase();
+    this.suggestedUsername = '';
 
     if (!normalizedUsername || !this.password.trim() || this.selectedUeCodes.length === 0) {
       this.message = 'Username, mot de passe et au moins une UE sont obligatoires.';
@@ -156,7 +162,8 @@ export class AdminStudentCreateComponent implements OnInit {
         }
 
         if (err.status === 409) {
-          this.message = 'Ce username existe deja. Choisissez un autre compte etudiant.';
+          this.suggestedUsername = this.buildSuggestedUsername(normalizedUsername);
+          this.message = `Ce username existe deja. Essayez plutot: ${this.suggestedUsername}`;
           return;
         }
 
@@ -179,6 +186,32 @@ export class AdminStudentCreateComponent implements OnInit {
     this.username = '';
     this.password = '';
     this.selectedUeCodes = [];
+    this.suggestedUsername = '';
     this.message = '';
+  }
+
+  useSuggestedUsername(): void {
+    if (!this.suggestedUsername) {
+      return;
+    }
+
+    this.username = this.suggestedUsername;
+    this.message = '';
+  }
+
+  private buildSuggestedUsername(base: string): string {
+    const [namePart, domainPart] = base.includes('@') ? base.split('@') : [base, 'trust.com'];
+    const safeName = (namePart || 'etudiant').replace(/[^a-z0-9._-]/g, '');
+    const domain = domainPart || 'trust.com';
+
+    let candidate = '';
+    let guard = 0;
+    do {
+      const suffix = Math.floor(100 + Math.random() * 900);
+      candidate = `${safeName}${suffix}@${domain}`;
+      guard += 1;
+    } while (this.existingUsernames.has(candidate) && guard < 20);
+
+    return candidate;
   }
 }
