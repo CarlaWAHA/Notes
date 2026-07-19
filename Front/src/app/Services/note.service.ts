@@ -9,7 +9,7 @@ import { environment } from '../../environment/environment';
 export class noteService {
 
   private http = inject(HttpClient);
-  private readonly notesUrl = `${environment.apiUrl.replace(/\/api$/, '')}/notes`;
+  private readonly notesUrl = `${environment.apiUrl}/notes`;
 
   getAllNotes(): Observable<NoteModel[]> {
     return this.http.get<NoteModel[]>(this.notesUrl);

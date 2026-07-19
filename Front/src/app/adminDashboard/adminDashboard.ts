@@ -1,176 +1,193 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { StudentService } from '../Services/studentService';
 import { GradeService } from '../Services/gradeService';
+import { UEService } from '../Services/ueService';
 import { Student } from '../models/student';
 import { UE } from '../models/ue';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   template: `
-    <div class="min-h-screen bg-[radial-gradient(circle_at_10%_10%,#fecaca_0%,#ffffff_45%,#fef2f2_100%)] text-neutral-900">
-      <nav class="border-b border-red-100 bg-white/90 backdrop-blur">
-        <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-8">
+    <div class="min-h-screen bg-[radial-gradient(circle_at_top,#fee2e2_0,#ffffff_45%,#fff7f7_100%)] text-neutral-900">
+      <header class="border-b border-red-100 bg-white/95">
+        <div class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 md:px-8">
           <h1 class="text-2xl font-black text-black">Tableau de Bord <span class="text-red-600">Admin</span></h1>
-          <div class="flex items-center gap-3">
-            <a routerLink="/home" class="rounded-full border border-red-200 px-4 py-2 font-semibold text-black transition hover:border-red-500 hover:text-red-600">Accueil</a>
-            <a routerLink="/admissions" class="rounded-full border border-red-200 px-4 py-2 font-semibold text-black transition hover:border-red-500 hover:text-red-600">Admissions</a>
-            <a routerLink="/admin-space" class="rounded-full bg-red-600 px-4 py-2 font-semibold text-white transition hover:bg-black">Admin</a>
-            <button
-              (click)="logout()"
-              class="rounded-full bg-black px-6 py-2 font-semibold text-white transition hover:bg-red-600"
-            >
-              Déconnexion
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <a href="/home" class="rounded-lg border border-red-200 px-3 py-2 hover:bg-red-50">Accueil</a>
+            <a href="/admissions" class="rounded-lg border border-red-200 px-3 py-2 hover:bg-red-50">Admissions</a>
+            <a href="/admin-space" class="rounded-lg border border-red-200 px-3 py-2 hover:bg-red-50">Admin</a>
+            <button (click)="logout()" class="rounded-lg bg-black px-4 py-2 text-white hover:bg-red-600">Déconnexion</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="mx-auto w-full max-w-7xl space-y-6 px-4 py-8 md:px-8">
+        <section class="rounded-2xl border border-red-200 bg-white p-4 shadow-sm">
+          <div class="flex flex-wrap items-center gap-3">
+            <button (click)="activeTab = 'manage-students'" [class.bg-red-600]="activeTab === 'manage-students'" [class.text-white]="activeTab === 'manage-students'" class="rounded-lg border border-red-200 px-4 py-2 font-semibold hover:bg-red-50">
+              Gestion Etudiants
+            </button>
+            <button (click)="activeTab = 'manage-ues'" [class.bg-red-600]="activeTab === 'manage-ues'" [class.text-white]="activeTab === 'manage-ues'" class="rounded-lg border border-red-200 px-4 py-2 font-semibold hover:bg-red-50">
+              Gestion UE
+            </button>
+            <button (click)="activeTab = 'assign-grades'" [class.bg-red-600]="activeTab === 'assign-grades'" [class.text-white]="activeTab === 'assign-grades'" class="rounded-lg border border-red-200 px-4 py-2 font-semibold hover:bg-red-50">
+              Attribution Notes
             </button>
           </div>
-        </div>
-      </nav>
-
-      <div class="mx-auto max-w-7xl p-6 md:px-8">
-        <section class="mb-6 rounded-3xl border border-red-200 bg-white p-8 shadow-lg shadow-red-100">
-          <p class="text-xs font-bold uppercase tracking-[0.2em] text-red-700">Administration</p>
-          <h2 class="mt-3 text-3xl font-black text-black">Gerer les etudiants, leurs UE et les notes</h2>
         </section>
 
-        <div class="mb-6 flex gap-4 border-b border-red-100">
-          <button
-            (click)="activeTab = 'manage-students'"
-            [class.border-b-4]="activeTab === 'manage-students'"
-            [class.border-red-600]="activeTab === 'manage-students'"
-            [class.text-red-600]="activeTab === 'manage-students'"
-            [class.text-slate-600]="activeTab !== 'manage-students'"
-            class="pb-4 font-semibold transition"
-          >
-            Gérer les Étudiants
-          </button>
-          <button
-            (click)="activeTab = 'assign-grades'"
-            [class.border-b-4]="activeTab === 'assign-grades'"
-            [class.border-red-600]="activeTab === 'assign-grades'"
-            [class.text-red-600]="activeTab === 'assign-grades'"
-            [class.text-slate-600]="activeTab !== 'assign-grades'"
-            class="pb-4 font-semibold transition"
-          >
-            Attribuer des Notes
-          </button>
-        </div>
+        <section *ngIf="activeTab === 'manage-students'" class="rounded-2xl border border-red-200 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-2xl font-black text-black">Gestion des Etudiants</h2>
+            <button (click)="goToCreateStudent()" class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white hover:bg-black">Ajouter un etudiant</button>
+          </div>
 
-        <div *ngIf="activeTab === 'manage-students'" class="space-y-6">
-          <div class="rounded-3xl border border-red-200 bg-white p-6 shadow-lg shadow-red-100">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-              <h2 class="text-xl font-bold text-black">Liste des Étudiants</h2>
-              <div class="flex flex-wrap gap-3">
-                <a routerLink="/admin/students/new" class="rounded-full bg-red-600 px-5 py-2 font-semibold text-white transition hover:bg-black">Ajouter un etudiant</a>
-                <a routerLink="/admin/ues" class="rounded-full border border-black px-5 py-2 font-semibold text-black transition hover:border-red-600 hover:text-red-600">Gerer les UE</a>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="border-b border-red-100 text-left text-sm uppercase tracking-wide text-red-700">
+                  <th class="px-4 py-3">ID</th>
+                  <th class="px-4 py-3">Username</th>
+                  <th class="px-4 py-3">UE</th>
+                  <th class="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let student of students" class="border-b border-red-50 align-top">
+                  <td class="px-4 py-3">{{ student.id }}</td>
+                  <td class="px-4 py-3">{{ student.user?.username }}</td>
+                  <td class="px-4 py-3">
+                    <span *ngIf="(student.ues || []).length === 0" class="text-sm text-neutral-500">Aucune UE</span>
+                    <span *ngFor="let ue of student.ues; let last = last" class="text-sm">
+                      {{ ue.code }}<span *ngIf="!last">, </span>
+                    </span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="flex gap-2">
+                      <button (click)="startEditStudent(student)" class="rounded-md border border-black px-3 py-1 text-sm font-semibold hover:border-red-600 hover:text-red-600">Modifier</button>
+                      <button (click)="deleteStudent(student)" class="rounded-md bg-black px-3 py-1 text-sm font-semibold text-white hover:bg-red-600">Supprimer</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div *ngIf="editingStudentId" class="mt-6 rounded-xl border border-red-200 bg-red-50/40 p-5">
+            <h3 class="text-lg font-bold text-black">Modifier l'etudiant #{{ editingStudentId }}</h3>
+
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold">Username</label>
+                <input [(ngModel)]="editUsername" type="text" class="w-full rounded-lg border border-red-200 bg-white px-3 py-2 outline-none focus:border-red-500" />
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-semibold">Nouveau mot de passe (optionnel)</label>
+                <input [(ngModel)]="editPassword" type="password" class="w-full rounded-lg border border-red-200 bg-white px-3 py-2 outline-none focus:border-red-500" />
               </div>
             </div>
 
-            <div *ngIf="studentMessage" class="mb-4 rounded-xl border border-green-300 bg-green-50 px-4 py-3 text-green-700">{{ studentMessage }}</div>
-            <div *ngIf="studentErrorMessage" class="mb-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-red-700">{{ studentErrorMessage }}</div>
+            <div class="mt-4">
+              <p class="mb-2 text-sm font-semibold">UE affectees</p>
+              <div class="grid gap-2 md:grid-cols-2">
+                <label *ngFor="let ue of availableUEs" class="flex items-center gap-2 rounded-lg border border-red-100 bg-white px-3 py-2 text-sm">
+                  <input type="checkbox" [checked]="isUESelectedInEdit(ue.code)" (change)="toggleUEInEdit(ue.code, $any($event.target).checked)" />
+                  <span>{{ ue.code }} - {{ ue.titre }}</span>
+                </label>
+              </div>
+            </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full border-collapse">
-                <thead class="border-b border-red-100 bg-red-50/60">
-                  <tr>
-                    <th class="px-4 py-3 text-left font-semibold text-black">ID</th>
-                    <th class="px-4 py-3 text-left font-semibold text-black">Nom d'utilisateur</th>
-                    <th class="px-4 py-3 text-left font-semibold text-black">UE</th>
-                    <th class="px-4 py-3 text-left font-semibold text-black">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let student of students" class="border-b border-red-50 hover:bg-red-50/40">
-                    <td class="px-4 py-3 text-neutral-700">{{ student.id }}</td>
-                    <td class="px-4 py-3 text-neutral-700">{{ student.user?.username }}</td>
-                    <td class="px-4 py-3 text-neutral-700">
-                      <span *ngFor="let ue of student.ues; let last = last">
-                        {{ ue.code }}<span *ngIf="!last">, </span>
-                      </span>
-                    </td>
-                    <td class="px-4 py-3">
-                      <div class="flex flex-wrap gap-2">
-                        <a [routerLink]="['/admin/students', student.id, 'edit']" class="rounded-lg bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 hover:bg-amber-200">Modifier</a>
-                        <button (click)="deleteStudent(student.id)" class="rounded-lg bg-red-100 px-3 py-1 text-sm font-medium text-red-700 hover:bg-red-200">Supprimer</button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="mt-4 flex gap-2">
+              <button (click)="saveStudentEdit()" class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white hover:bg-black">Enregistrer</button>
+              <button (click)="cancelStudentEdit()" class="rounded-lg border border-black px-4 py-2 font-semibold hover:border-red-600 hover:text-red-600">Annuler</button>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div *ngIf="activeTab === 'assign-grades'" class="space-y-6">
-          <div class="rounded-3xl border border-red-200 bg-white p-6 shadow-lg shadow-red-100">
-            <h2 class="mb-4 text-xl font-bold text-black">Attribuer une Note</h2>
+        <section *ngIf="activeTab === 'manage-ues'" class="rounded-2xl border border-red-200 bg-white p-6 shadow-sm">
+          <h2 class="text-2xl font-black text-black">Gestion des UE</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-neutral-700">Sélectionner un Étudiant</label>
-                <select
-                  [(ngModel)]="selectedStudentId"
-                  (change)="onStudentSelected()"
-                  class="w-full rounded-lg border border-red-200 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                >
-                  <option value="">-- Sélectionner un étudiant --</option>
-                  <option *ngFor="let student of students" [value]="student.id">
-                    {{ student.user?.username }} (ID: {{ student.id }})
-                  </option>
-                </select>
-              </div>
+          <div class="mt-4 grid gap-3 md:grid-cols-3">
+            <input [(ngModel)]="ueCode" type="text" placeholder="Code UE (ex: STA104)" class="rounded-lg border border-red-200 bg-red-50/40 px-3 py-2 outline-none focus:border-red-500" />
+            <input [(ngModel)]="ueTitle" type="text" placeholder="Titre UE" class="rounded-lg border border-red-200 bg-red-50/40 px-3 py-2 outline-none focus:border-red-500" />
+            <button (click)="saveUE()" class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white hover:bg-black">{{ editingUEId ? 'Mettre a jour UE' : 'Ajouter UE' }}</button>
+          </div>
 
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-neutral-700">Sélectionner une UE</label>
-                <select
-                  [(ngModel)]="selectedUECode"
-                  class="w-full rounded-lg border border-red-200 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                  [disabled]="selectedStudentUEs.length === 0"
-                >
-                  <option value="">-- Sélectionner une UE --</option>
-                  <option *ngFor="let ue of selectedStudentUEs" [value]="ue.code">
-                    {{ ue.code }} - {{ ue.titre }}
-                  </option>
-                </select>
-              </div>
+          <div class="mt-5 overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="border-b border-red-100 text-left text-sm uppercase tracking-wide text-red-700">
+                  <th class="px-4 py-3">Code</th>
+                  <th class="px-4 py-3">Titre</th>
+                  <th class="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ue of availableUEs" class="border-b border-red-50">
+                  <td class="px-4 py-3 font-semibold text-black">{{ ue.code }}</td>
+                  <td class="px-4 py-3">{{ ue.titre }}</td>
+                  <td class="px-4 py-3">
+                    <div class="flex gap-2">
+                      <button (click)="startEditUE(ue)" class="rounded-md border border-black px-3 py-1 text-sm font-semibold hover:border-red-600 hover:text-red-600">Modifier</button>
+                      <button (click)="deleteUE(ue)" class="rounded-md bg-black px-3 py-1 text-sm font-semibold text-white hover:bg-red-600">Supprimer</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-              <div>
-                <label class="mb-2 block text-sm font-semibold text-neutral-700">Note (0-20)</label>
-                <input
-                  type="number"
-                  [(ngModel)]="gradeValue"
-                  min="0"
-                  max="20"
-                  placeholder="Ex: 15.5"
-                  class="w-full rounded-lg border border-red-200 px-4 py-3 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                />
-              </div>
+        <section *ngIf="activeTab === 'assign-grades'" class="rounded-2xl border border-red-200 bg-white p-6 shadow-sm">
+          <h2 class="text-2xl font-black text-black">Attribuer une Note</h2>
 
-              <div class="flex items-end">
-                <button
-                  (click)="assignGrade()"
-                  [disabled]="!selectedStudentId || !selectedUECode || gradeValue === null || isLoadingGrade"
-                  class="w-full rounded-lg bg-red-600 py-3 font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <span *ngIf="!isLoadingGrade">Attribuer la Note</span>
-                  <span *ngIf="isLoadingGrade">Traitement...</span>
-                </button>
-              </div>
+          <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-neutral-800">Etudiant</label>
+              <select [(ngModel)]="selectedStudentId" (change)="onStudentSelected()" class="w-full rounded-lg border border-red-200 bg-red-50/40 px-3 py-2 outline-none focus:border-red-500">
+                <option [ngValue]="null">-- Sélectionner un étudiant --</option>
+                <option *ngFor="let student of students" [ngValue]="student.id">
+                  {{ student.user?.username }} (ID: {{ student.id }})
+                </option>
+              </select>
             </div>
 
-            <div *ngIf="gradeSuccessMessage" class="mt-4 bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-lg">
-              <p class="font-semibold">✅ {{ gradeSuccessMessage }}</p>
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-neutral-800">UE</label>
+              <select [(ngModel)]="selectedUECode" class="w-full rounded-lg border border-red-200 bg-red-50/40 px-3 py-2 outline-none focus:border-red-500" [disabled]="selectedStudentUEs.length === 0">
+                <option value="">-- Sélectionner une UE --</option>
+                <option *ngFor="let ue of selectedStudentUEs" [value]="ue.code">{{ ue.code }} - {{ ue.titre }}</option>
+              </select>
             </div>
 
-            <div *ngIf="gradeErrorMessage" class="mt-4 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
-              <p class="font-semibold">❌ {{ gradeErrorMessage }}</p>
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-neutral-800">Note (0-20)</label>
+              <input type="number" [(ngModel)]="gradeValue" min="0" max="20" class="w-full rounded-lg border border-red-200 bg-red-50/40 px-3 py-2 outline-none focus:border-red-500" />
+            </div>
+
+            <div class="flex items-end">
+              <button (click)="assignGrade()" [disabled]="!selectedStudentId || !selectedUECode || gradeValue === null || isLoadingGrade" class="w-full rounded-lg bg-red-600 py-2 font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-50">
+                {{ isLoadingGrade ? 'Traitement...' : 'Attribuer la note' }}
+              </button>
             </div>
           </div>
-        </div>
-      </div>
+
+          <div *ngIf="gradeSuccessMessage" class="mt-4 rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-green-700">
+            {{ gradeSuccessMessage }}
+          </div>
+
+          <div *ngIf="gradeErrorMessage" class="mt-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-red-700">
+            {{ gradeErrorMessage }}
+          </div>
+        </section>
+
+        <div *ngIf="uiMessage" class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{{ uiMessage }}</div>
+      </main>
     </div>
   `,
   styles: []
@@ -179,8 +196,21 @@ export class AdminDashboardComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
 
-  activeTab: 'manage-students' | 'assign-grades' = 'manage-students';
+  activeTab: 'manage-students' | 'manage-ues' | 'assign-grades' = 'manage-students';
   students: Student[] = [];
+  availableUEs: UE[] = [];
+
+  editingStudentId: number | null = null;
+  editUsername = '';
+  editPassword = '';
+  editUeCodes: string[] = [];
+
+  ueCode = '';
+  ueTitle = '';
+  editingUEId: number | null = null;
+
+  uiMessage = '';
+
   selectedStudentId: number | null = null;
   selectedStudentUEs: UE[] = [];
   selectedUECode: string = '';
@@ -188,14 +218,14 @@ export class AdminDashboardComponent implements OnInit {
   isLoadingGrade: boolean = false;
   gradeSuccessMessage: string = '';
   gradeErrorMessage: string = '';
-  studentMessage: string = '';
-  studentErrorMessage: string = '';
 
   constructor(
     private studentService: StudentService,
-    private gradeService: GradeService
+    private gradeService: GradeService,
+    private ueService: UEService
   ) {
     this.loadStudents();
+    this.loadUEs();
   }
 
   ngOnInit(): void {
@@ -216,6 +246,161 @@ export class AdminDashboardComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors du chargement des étudiants', err);
+        this.uiMessage = 'Impossible de charger les etudiants.';
+      }
+    });
+  }
+
+  loadUEs(): void {
+    this.ueService.getAllUEs().subscribe({
+      next: (data) => {
+        this.availableUEs = data;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des UE', err);
+        this.uiMessage = 'Impossible de charger les UE.';
+      }
+    });
+  }
+
+  goToCreateStudent(): void {
+    this.router.navigate(['/admin/students/new']);
+  }
+
+  startEditStudent(student: Student): void {
+    this.editingStudentId = student.id ?? null;
+    this.editUsername = student.user?.username || '';
+    this.editPassword = '';
+    this.editUeCodes = (student.ues || []).map((ue) => ue.code);
+    this.uiMessage = '';
+  }
+
+  cancelStudentEdit(): void {
+    this.editingStudentId = null;
+    this.editUsername = '';
+    this.editPassword = '';
+    this.editUeCodes = [];
+  }
+
+  isUESelectedInEdit(code: string): boolean {
+    return this.editUeCodes.includes(code);
+  }
+
+  toggleUEInEdit(code: string, checked: boolean): void {
+    if (checked && !this.editUeCodes.includes(code)) {
+      this.editUeCodes.push(code);
+      return;
+    }
+
+    if (!checked) {
+      this.editUeCodes = this.editUeCodes.filter((value) => value !== code);
+    }
+  }
+
+  saveStudentEdit(): void {
+    if (!this.editingStudentId) {
+      return;
+    }
+
+    if (!this.editUsername.trim() || this.editUeCodes.length === 0) {
+      this.uiMessage = 'Username et au moins une UE sont obligatoires.';
+      return;
+    }
+
+    this.studentService.updateStudent(this.editingStudentId, {
+      username: this.editUsername.trim(),
+      password: this.editPassword.trim() || undefined,
+      ueCodes: this.editUeCodes
+    }).subscribe({
+      next: () => {
+        this.uiMessage = 'Etudiant mis a jour avec succes.';
+        this.cancelStudentEdit();
+        this.loadStudents();
+      },
+      error: (err) => {
+        console.error('Erreur update etudiant', err);
+        this.uiMessage = err?.error || 'Impossible de mettre a jour cet etudiant.';
+      }
+    });
+  }
+
+  deleteStudent(student: Student): void {
+    if (!student.id) {
+      return;
+    }
+
+    if (!confirm(`Supprimer l'etudiant ${student.user?.username || ''} ?`)) {
+      return;
+    }
+
+    this.studentService.deleteStudent(student.id).subscribe({
+      next: () => {
+        this.uiMessage = 'Etudiant supprime avec succes.';
+        this.loadStudents();
+      },
+      error: (err) => {
+        console.error('Erreur suppression etudiant', err);
+        this.uiMessage = 'Impossible de supprimer cet etudiant.';
+      }
+    });
+  }
+
+  startEditUE(ue: UE): void {
+    this.editingUEId = ue.id ?? null;
+    this.ueCode = ue.code;
+    this.ueTitle = ue.titre;
+    this.uiMessage = '';
+  }
+
+  resetUEForm(): void {
+    this.editingUEId = null;
+    this.ueCode = '';
+    this.ueTitle = '';
+  }
+
+  saveUE(): void {
+    if (!this.ueCode.trim() || !this.ueTitle.trim()) {
+      this.uiMessage = 'Code et titre UE sont obligatoires.';
+      return;
+    }
+
+    const payload = { code: this.ueCode.trim(), titre: this.ueTitle.trim() };
+    const request$ = this.editingUEId
+      ? this.ueService.updateUE(this.editingUEId, payload)
+      : this.ueService.createUE(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.uiMessage = this.editingUEId ? 'UE mise a jour.' : 'UE creee.';
+        this.resetUEForm();
+        this.loadUEs();
+        this.loadStudents();
+      },
+      error: (err) => {
+        console.error('Erreur sauvegarde UE', err);
+        this.uiMessage = err?.error || 'Impossible de sauvegarder cette UE.';
+      }
+    });
+  }
+
+  deleteUE(ue: UE): void {
+    if (!ue.id) {
+      return;
+    }
+
+    if (!confirm(`Supprimer l'UE ${ue.code} ?`)) {
+      return;
+    }
+
+    this.ueService.deleteUE(ue.id).subscribe({
+      next: () => {
+        this.uiMessage = 'UE supprimee avec succes.';
+        this.loadUEs();
+        this.loadStudents();
+      },
+      error: (err) => {
+        console.error('Erreur suppression UE', err);
+        this.uiMessage = 'Impossible de supprimer cette UE.';
       }
     });
   }
@@ -263,27 +448,8 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  deleteStudent(studentId?: number): void {
-    if (!studentId) {
-      return;
-    }
-
-    this.studentErrorMessage = '';
-    this.studentMessage = '';
-
-    this.studentService.deleteStudent(studentId).subscribe({
-      next: () => {
-        this.studentMessage = 'Etudiant supprime avec succes.';
-        this.loadStudents();
-      },
-      error: (err) => {
-        this.studentErrorMessage = err.error || 'Impossible de supprimer cet etudiant.';
-      }
-    });
-  }
-
   logout(): void {
     localStorage.clear();
-    this.router.navigate(['/home']);
+    window.location.href = '/';
   }
 }

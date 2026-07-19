@@ -59,28 +59,43 @@ public class AdminStudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody CreateStudentRequest request) {
-        if (request.getUsername() == null || request.getUsername().isEmpty() ||
-            request.getUeCodes() == null || request.getUeCodes().isEmpty()) {
-            return ResponseEntity.badRequest().body("Username and at least one UE are required");
+    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody UpdateStudentRequest request) {
+        Optional<Student> existingStudent = studentService.findById(id);
+        if (existingStudent.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
-        try {
-            return studentService.updateStudent(id, request.getUsername(), request.getPassword(), request.getUeCodes())
-                    .<ResponseEntity<?>>map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (IllegalArgumentException exception) {
-            return ResponseEntity.badRequest().body(exception.getMessage());
+        if (request.getUsername() == null || request.getUsername().isBlank()) {
+            return ResponseEntity.badRequest().body("Username is required");
         }
+
+        if (request.getUeCodes() == null || request.getUeCodes().isEmpty()) {
+            return ResponseEntity.badRequest().body("At least one UE is required");
+        }
+
+        Optional<User> updatedUser = userService.updateStudentAccount(
+            existingStudent.get().getUser().getId(),
+            request.getUsername(),
+            request.getPassword()
+        );
+
+        if (updatedUser.isEmpty()) {
+            return ResponseEntity.badRequest().body("Username already exists");
+        }
+
+        Optional<Student> updatedStudent = studentService.replaceStudentUEs(id, request.getUeCodes());
+        return updatedStudent
+            .<ResponseEntity<?>>map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.badRequest().body("Unable to update student UEs"));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
-        if (!studentService.deleteStudent(id)) {
-            return ResponseEntity.notFound().build();
+        if (studentService.deleteStudent(id)) {
+            return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/{studentId}/ues/{ueCode}")
@@ -98,6 +113,36 @@ public class AdminStudentController {
     }
 
     public static class CreateStudentRequest {
+        private String username;
+        private String password;
+        private List<String> ueCodes;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public List<String> getUeCodes() {
+            return ueCodes;
+        }
+
+        public void setUeCodes(List<String> ueCodes) {
+            this.ueCodes = ueCodes;
+        }
+    }
+
+    public static class UpdateStudentRequest {
         private String username;
         private String password;
         private List<String> ueCodes;

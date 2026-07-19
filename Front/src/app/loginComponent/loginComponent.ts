@@ -26,10 +26,7 @@ export class LoginComponent {
   isLoading = false;
 
   submit() {
-    const normalizedUsername = this.model.username.trim().toLowerCase();
-    const normalizedPassword = this.model.password.trim();
-
-    if (!normalizedUsername || !normalizedPassword) {
+    if (!this.model.username || !this.model.password) {
       this.errorMessage = 'Veuillez remplir tous les champs.';
       return;
     }
@@ -37,7 +34,7 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.authService.login({ username: normalizedUsername, password: normalizedPassword }).subscribe({
+    this.authService.login(this.model).subscribe({
       next: (res) => {
         console.log('Login successful:', res);
         const roles = res.roles || ['ROLE_USER'];

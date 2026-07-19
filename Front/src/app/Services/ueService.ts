@@ -24,12 +24,12 @@ export class UEService {
     return this.http.get<UE>(`${this.apiUrl}/code/${code}`);
   }
 
-  createUE(request: UE): Observable<UE> {
-    return this.http.post<UE>(this.apiUrl, request);
+  createUE(payload: { code: string; titre: string }): Observable<UE> {
+    return this.http.post<UE>(this.apiUrl, payload);
   }
 
-  updateUE(id: number, request: UE): Observable<UE> {
-    return this.http.put<UE>(`${this.apiUrl}/${id}`, request);
+  updateUE(id: number, payload: { code: string; titre: string }): Observable<UE> {
+    return this.http.put<UE>(`${this.apiUrl}/${id}`, payload);
   }
 
   deleteUE(id: number): Observable<void> {

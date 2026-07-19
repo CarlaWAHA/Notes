@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.UE;
-import com.example.demo.repository.UERepository;
 import com.example.demo.repository.GradeRepository;
-import org.springframework.http.HttpStatus;
+import com.example.demo.repository.StudentRepository;
+import com.example.demo.repository.UERepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +16,12 @@ import java.util.Optional;
 public class UEController {
 
     private final UERepository ueRepository;
+    private final StudentRepository studentRepository;
     private final GradeRepository gradeRepository;
 
-    public UEController(UERepository ueRepository, GradeRepository gradeRepository) {
+    public UEController(UERepository ueRepository, StudentRepository studentRepository, GradeRepository gradeRepository) {
         this.ueRepository = ueRepository;
+        this.studentRepository = studentRepository;
         this.gradeRepository = gradeRepository;
         initializeDefaultUEs();
     }
@@ -54,74 +56,60 @@ public class UEController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createUE(@RequestBody UERequest request) {
+    public ResponseEntity<?> createUE(@RequestBody UE request) {
         if (request.getCode() == null || request.getCode().isBlank() || request.getTitre() == null || request.getTitre().isBlank()) {
             return ResponseEntity.badRequest().body("Code and title are required");
         }
 
-        if (ueRepository.findByCode(request.getCode()).isPresent()) {
-            return ResponseEntity.badRequest().body("UE with this code already exists");
+        Optional<UE> existing = ueRepository.findByCode(request.getCode().trim());
+        if (existing.isPresent()) {
+            return ResponseEntity.badRequest().body("UE code already exists");
         }
 
-        UE ue = new UE(request.getCode(), request.getTitre());
-        return ResponseEntity.status(HttpStatus.CREATED).body(ueRepository.save(ue));
+        UE saved = ueRepository.save(new UE(request.getCode().trim(), request.getTitre().trim()));
+        return ResponseEntity.status(201).body(saved);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateUE(@PathVariable Long id, @RequestBody UERequest request) {
+    public ResponseEntity<?> updateUE(@PathVariable Long id, @RequestBody UE request) {
+        Optional<UE> existingOpt = ueRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         if (request.getCode() == null || request.getCode().isBlank() || request.getTitre() == null || request.getTitre().isBlank()) {
             return ResponseEntity.badRequest().body("Code and title are required");
         }
 
-        Optional<UE> existingOptional = ueRepository.findById(id);
-        if (existingOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        UE existing = existingOpt.get();
+        Optional<UE> duplicate = ueRepository.findByCode(request.getCode().trim());
+        if (duplicate.isPresent() && !duplicate.get().getId().equals(existing.getId())) {
+            return ResponseEntity.badRequest().body("UE code already exists");
         }
 
-        UE existing = existingOptional.get();
-        Optional<UE> ueWithSameCode = ueRepository.findByCode(request.getCode());
-        if (ueWithSameCode.isPresent() && !ueWithSameCode.get().getId().equals(existing.getId())) {
-            return ResponseEntity.badRequest().body("UE with this code already exists");
-        }
-
-        existing.setCode(request.getCode());
-        existing.setTitre(request.getTitre());
+        existing.setCode(request.getCode().trim());
+        existing.setTitre(request.getTitre().trim());
         return ResponseEntity.ok(ueRepository.save(existing));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUE(@PathVariable Long id) {
-        Optional<UE> ueOptional = ueRepository.findById(id);
-        if (ueOptional.isEmpty()) {
+        Optional<UE> ueOpt = ueRepository.findById(id);
+        if (ueOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        UE ue = ueOptional.get();
-        gradeRepository.deleteByUe(ue);
+        UE ue = ueOpt.get();
+        // Detach UE from students before deletion to avoid FK constraint failures.
+        studentRepository.findAll().forEach(student -> {
+            student.removeUE(ue);
+            studentRepository.save(student);
+        });
+
+        gradeRepository.deleteAll(gradeRepository.findByUe(ue));
         ueRepository.delete(ue);
         return ResponseEntity.noContent().build();
-    }
-
-    public static class UERequest {
-        private String code;
-        private String titre;
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        public String getTitre() {
-            return titre;
-        }
-
-        public void setTitre(String titre) {
-            this.titre = titre;
-        }
     }
 }

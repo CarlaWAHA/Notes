@@ -27,16 +27,15 @@ public class UserService {
     }
 
     private void ensureAdminAccount(String username) {
-        String normalizedUsername = normalizeUsername(username);
-        Optional<User> existingAdmin = userRepository.findByUsernameIgnoreCase(normalizedUsername);
+        Optional<User> existingAdmin = userRepository.findByUsername(username);
         if (existingAdmin.isEmpty()) {
-            User admin = new User(normalizedUsername, passwordEncoder.encode("12345678"), List.of("ROLE_ADMIN"));
+            User admin = new User(username, passwordEncoder.encode("12345678"), List.of("ROLE_ADMIN"));
             userRepository.save(admin);
         }
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsernameIgnoreCase(normalizeUsername(username));
+        return userRepository.findByUsername(username);
     }
 
     public List<User> getStudents() {
@@ -44,12 +43,11 @@ public class UserService {
     }
 
     public Optional<User> createStudent(String username, String rawPassword) {
-        String normalizedUsername = normalizeUsername(username);
-        if (userRepository.findByUsernameIgnoreCase(normalizedUsername).isPresent()) {
+        if (userRepository.findByUsername(username).isPresent()) {
             return Optional.empty();
         }
 
-        User student = new User(normalizedUsername, passwordEncoder.encode(rawPassword), List.of("ROLE_STUDENT"));
+        User student = new User(username, passwordEncoder.encode(rawPassword), List.of("ROLE_STUDENT"));
         User savedStudent = userRepository.save(student);
         return Optional.of(savedStudent);
     }
@@ -58,10 +56,24 @@ public class UserService {
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
 
-    private String normalizeUsername(String username) {
-        if (username == null) {
-            return "";
+    public Optional<User> updateStudentAccount(Long userId, String username, String rawPassword) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return Optional.empty();
         }
-        return username.trim().toLowerCase();
+
+        User user = userOpt.get();
+        String normalizedUsername = username.trim();
+        Optional<User> existingUsername = userRepository.findByUsernameIgnoreCase(normalizedUsername);
+        if (existingUsername.isPresent() && !existingUsername.get().getId().equals(userId)) {
+            return Optional.empty();
+        }
+
+        user.setUsername(normalizedUsername);
+        if (rawPassword != null && !rawPassword.isBlank()) {
+            user.setPassword(passwordEncoder.encode(rawPassword));
+        }
+
+        return Optional.of(userRepository.save(user));
     }
 }
