@@ -2,6 +2,7 @@ import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { StudentService } from '../Services/studentService';
 import { UEService } from '../Services/ueService';
 import { UE } from '../models/ue';
@@ -47,7 +48,8 @@ import { UE } from '../models/ue';
 
           <div class="mt-6 flex flex-wrap gap-2">
             <button (click)="createStudent()" [disabled]="isSaving" class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white hover:bg-black disabled:opacity-50">
-              {{ isSaving ? 'Creation...' : 'Creer l\'etudiant' }}
+              <span *ngIf="!isSaving">Creer l'etudiant</span>
+              <span *ngIf="isSaving">Creation...</span>
             </button>
             <button (click)="resetForm()" class="rounded-lg border border-black px-4 py-2 font-semibold hover:border-red-600 hover:text-red-600">Reinitialiser</button>
           </div>
@@ -120,9 +122,24 @@ export class AdminStudentCreateComponent implements OnInit {
         this.isSaving = false;
         this.router.navigate(['/admin']);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.isSaving = false;
-        this.message = err?.error || 'Impossible de creer cet etudiant.';
+        if (err.status === 401 || err.status === 403) {
+          this.message = 'Session admin invalide ou expiree. Deconnectez-vous puis reconnectez-vous avec admin@trust.com.';
+          return;
+        }
+
+        if (err.status === 400) {
+          if (typeof err.error === 'string' && err.error.trim().length > 0) {
+            this.message = err.error;
+            return;
+          }
+
+          this.message = 'Donnees invalides: username unique, mot de passe non vide et au moins une UE.';
+          return;
+        }
+
+        this.message = 'Impossible de creer cet etudiant.';
       }
     });
   }

@@ -27,15 +27,18 @@ public class AdminStudentController {
 
     @PostMapping
     public ResponseEntity<?> createStudent(@RequestBody CreateStudentRequest request) {
-        if (request.getUsername() == null || request.getUsername().isEmpty() ||
-            request.getPassword() == null || request.getPassword().isEmpty() ||
+        String username = request.getUsername() == null ? "" : request.getUsername().trim();
+        String password = request.getPassword() == null ? "" : request.getPassword().trim();
+
+        if (username.isBlank() ||
+            password.isBlank() ||
             request.getUeCodes() == null || request.getUeCodes().isEmpty()) {
             return ResponseEntity.badRequest().body("Username, password, and at least one UE are required");
         }
 
-        Optional<User> createdUser = userService.createStudent(request.getUsername(), request.getPassword());
+        Optional<User> createdUser = userService.createStudent(username, password);
         if (createdUser.isEmpty()) {
-            return ResponseEntity.badRequest().body("Student with this username already exists");
+            return ResponseEntity.badRequest().body("Student username is invalid or already exists");
         }
 
         Optional<Student> createdStudent = studentService.createStudent(createdUser.get(), request.getUeCodes());

@@ -43,11 +43,16 @@ public class UserService {
     }
 
     public Optional<User> createStudent(String username, String rawPassword) {
-        if (userRepository.findByUsername(username).isPresent()) {
+        String normalizedUsername = username == null ? "" : username.trim();
+        if (normalizedUsername.isBlank()) {
             return Optional.empty();
         }
 
-        User student = new User(username, passwordEncoder.encode(rawPassword), List.of("ROLE_STUDENT"));
+        if (userRepository.findByUsernameIgnoreCase(normalizedUsername).isPresent()) {
+            return Optional.empty();
+        }
+
+        User student = new User(normalizedUsername, passwordEncoder.encode(rawPassword), List.of("ROLE_STUDENT"));
         User savedStudent = userRepository.save(student);
         return Optional.of(savedStudent);
     }
