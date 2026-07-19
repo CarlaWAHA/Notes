@@ -27,15 +27,16 @@ public class UserService {
     }
 
     private void ensureAdminAccount(String username) {
-        Optional<User> existingAdmin = userRepository.findByUsername(username);
+        String normalizedUsername = normalizeUsername(username);
+        Optional<User> existingAdmin = userRepository.findByUsernameIgnoreCase(normalizedUsername);
         if (existingAdmin.isEmpty()) {
-            User admin = new User(username, passwordEncoder.encode("12345678"), List.of("ROLE_ADMIN"));
+            User admin = new User(normalizedUsername, passwordEncoder.encode("12345678"), List.of("ROLE_ADMIN"));
             userRepository.save(admin);
         }
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsernameIgnoreCase(normalizeUsername(username));
     }
 
     public List<User> getStudents() {
@@ -43,16 +44,24 @@ public class UserService {
     }
 
     public Optional<User> createStudent(String username, String rawPassword) {
-        if (userRepository.findByUsername(username).isPresent()) {
+        String normalizedUsername = normalizeUsername(username);
+        if (userRepository.findByUsernameIgnoreCase(normalizedUsername).isPresent()) {
             return Optional.empty();
         }
 
-        User student = new User(username, passwordEncoder.encode(rawPassword), List.of("ROLE_STUDENT"));
+        User student = new User(normalizedUsername, passwordEncoder.encode(rawPassword), List.of("ROLE_STUDENT"));
         User savedStudent = userRepository.save(student);
         return Optional.of(savedStudent);
     }
 
     public boolean checkPassword(User user, String rawPassword) {
         return passwordEncoder.matches(rawPassword, user.getPassword());
+    }
+
+    private String normalizeUsername(String username) {
+        if (username == null) {
+            return "";
+        }
+        return username.trim().toLowerCase();
     }
 }
