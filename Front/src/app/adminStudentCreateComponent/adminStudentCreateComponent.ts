@@ -140,46 +140,7 @@ export class AdminStudentCreateComponent implements OnInit {
 
     this.isSaving = true;
     this.message = '';
-
-    this.studentService.createStudent({
-      username: normalizedUsername,
-      password: this.password,
-      ueCodes: this.selectedUeCodes
-    }).subscribe({
-      next: () => {
-        this.isSaving = false;
-        this.router.navigate(['/admin']).then((ok) => {
-          if (!ok && isPlatformBrowser(this.platformId)) {
-            window.location.href = '/admin';
-          }
-        });
-      },
-      error: (err: HttpErrorResponse) => {
-        this.isSaving = false;
-        if (err.status === 401 || err.status === 403) {
-          this.message = 'Session admin invalide ou expiree. Deconnectez-vous puis reconnectez-vous avec admin@trust.com.';
-          return;
-        }
-
-        if (err.status === 409) {
-          this.suggestedUsername = this.buildSuggestedUsername(normalizedUsername);
-          this.message = `Ce username existe deja. Essayez plutot: ${this.suggestedUsername}`;
-          return;
-        }
-
-        if (err.status === 400) {
-          if (typeof err.error === 'string' && err.error.trim().length > 0) {
-            this.message = err.error;
-            return;
-          }
-
-          this.message = 'Donnees invalides: username unique, mot de passe non vide et au moins une UE.';
-          return;
-        }
-
-        this.message = 'Impossible de creer cet etudiant.';
-      }
-    });
+    this.submitCreateStudent(normalizedUsername, true);
   }
 
   resetForm(): void {
@@ -213,5 +174,58 @@ export class AdminStudentCreateComponent implements OnInit {
     } while (this.existingUsernames.has(candidate) && guard < 20);
 
     return candidate;
+  }
+
+  private submitCreateStudent(username: string, canRetryOnConflict: boolean): void {
+    this.studentService.createStudent({
+      username,
+      password: this.password,
+      ueCodes: this.selectedUeCodes
+    }).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.router.navigate(['/admin']).then((ok) => {
+          if (!ok && isPlatformBrowser(this.platformId)) {
+            window.location.href = '/admin';
+          }
+        });
+      },
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 401 || err.status === 403) {
+          this.isSaving = false;
+          this.message = 'Session admin invalide ou expiree. Deconnectez-vous puis reconnectez-vous avec admin@trust.com.';
+          return;
+        }
+
+        if (err.status === 409) {
+          if (canRetryOnConflict) {
+            const fallbackUsername = this.buildSuggestedUsername(username);
+            this.suggestedUsername = fallbackUsername;
+            this.username = fallbackUsername;
+            this.existingUsernames.add(fallbackUsername);
+            this.message = `Username deja pris. Nouvelle tentative automatique avec: ${fallbackUsername}`;
+            this.submitCreateStudent(fallbackUsername, false);
+            return;
+          }
+
+          this.isSaving = false;
+          this.message = 'Conflit persistant: choisissez un autre username et reessayez.';
+          return;
+        }
+
+        this.isSaving = false;
+        if (err.status === 400) {
+          if (typeof err.error === 'string' && err.error.trim().length > 0) {
+            this.message = err.error;
+            return;
+          }
+
+          this.message = 'Donnees invalides: username unique, mot de passe non vide et au moins une UE.';
+          return;
+        }
+
+        this.message = 'Impossible de creer cet etudiant.';
+      }
+    });
   }
 }
