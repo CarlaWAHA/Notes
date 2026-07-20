@@ -1,6 +1,6 @@
-# 🚀 Guide de Démarrage - Notes Application
+#  Guide de Démarrage - Notes Application
 
-## 📋 Prérequis
+##  Prérequis
 
 - **Option 1 (Local)** : Java 25, Node.js 20+, PostgreSQL 15+
 - **Option 2 (Docker)** : Docker Desktop + Docker Compose
@@ -37,13 +37,13 @@ Vous devriez voir 3 conteneurs :
 - `notes-backend` (Spring Boot)
 - `notes-frontend` (Angular + Nginx)
 
-### 3️⃣ Accéder à l'application
+### Accéder à l'application
 
-- **Frontend** : http://localhost:4200 ✅
+- **Frontend** : http://localhost:4200 
 - **Backend API** : http://localhost:8080/api/ues
 - **Logs** : `docker-compose logs -f`
 
-### 4️⃣ Arrêter les services
+### Arrêter les services
 
 ```bash
 docker-compose down
@@ -54,7 +54,7 @@ docker-compose down -v  # Avec suppression des volumes (BDD)
 
 ## **Option B : Démarrage Local (Dev)**
 
-### 1️⃣ Installer PostgreSQL
+### Installer PostgreSQL
 
 #### Windows
 - Téléchargez : https://www.postgresql.org/download/windows/
@@ -85,7 +85,7 @@ CREATE DATABASE notes_db;
 \q
 ```
 
-### 3️⃣ Vérifier application.properties
+### Vérifier application.properties
 
 ```bash
 # Fichier: demo/src/main/resources/application.properties
@@ -102,7 +102,7 @@ SPRING_DATASOURCE_USERNAME=postgres
 SPRING_DATASOURCE_PASSWORD=postgres
 ```
 
-### 4️⃣ Démarrer le Backend (Terminal 1)
+### Démarrer le Backend (Terminal 1)
 
 ```bash
 cd "C:\Users\PC\eclipse-workspace\demo\Notes\demo"
@@ -114,7 +114,7 @@ Attendez le message :
 Tomcat started on port(s): 8080 (http)
 ```
 
-### 5️⃣ Démarrer le Frontend (Terminal 2)
+### 5️ Démarrer le Frontend (Terminal 2)
 
 ```bash
 cd "C:\Users\PC\eclipse-workspace\demo\Notes\Front"
@@ -137,8 +137,8 @@ Local: http://localhost:4200
 Ouvrez http://localhost:4200
 
 Vous devez voir **2 onglets** :
-- ✅ Se Connecter
-- ✅ S'Inscrire
+- Se Connecter
+- S'Inscrire
 
 ### **2. Login Admin**
 
@@ -149,7 +149,7 @@ Mot de passe : 12345678
 Cliquez "Se connecter"
 ```
 
-**Résultat attendu** → Redirection vers `/admin` ✅
+**Résultat attendu** → Redirection vers `/admin` 
 
 ### **3. Créer un Étudiant**
 
@@ -161,18 +161,18 @@ Sélectionner UEs : ✓ STA103, ✓ STA102
 Cliquez "Créer un Compte Étudiant"
 ```
 
-**Résultat attendu** → Message succès ✅
+**Résultat attendu** → Message succès 
 
 ### **4. Attribuer une Note (Admin)**
 
 Dashboard Admin :
-1. Tab "📝 Attribuer des Notes"
+1. Tab "Attribuer des Notes"
 2. Sélectionnez étudiant : `etudiant1@test.com`
 3. UE s'affiche : `STA103`
 4. Entrez note : `15.5`
 5. Cliquez "Attribuer la Note"
 
-**Résultat attendu** → Note attribuée ✅
+**Résultat attendu** → Note attribuée 
 
 ### **5. Voir les Notes (Étudiant)**
 
@@ -182,7 +182,7 @@ Dashboard Admin :
    Email : etudiant1@test.com
    Mot de passe : motdepasse123
    ```
-3. Vous êtes sur `/student` → "Mon Espace Personnel" ✅
+3. Vous êtes sur `/student` → "Mon Espace Personnel" 
 4. Vous voyez :
    - UE **STA103** (card)
    - Note **15.5/20**
@@ -190,9 +190,9 @@ Dashboard Admin :
 
 ---
 
-## 🆘 Troubleshooting
+##  Troubleshooting
 
-### ❌ Backend n'a pas accès à PostgreSQL
+###  Backend n'a pas accès à PostgreSQL
 
 **Solution** :
 ```bash
@@ -203,14 +203,14 @@ netstat -an | findstr "5432"
 psql -U postgres -d notes_db -c "SELECT 1;"
 ```
 
-### ❌ Frontend ne peut pas appeler le backend
+###  Frontend ne peut pas appeler le backend
 
 **Solution** : Vérifiez CORS dans SecurityConfig
 ```java
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 ```
 
-### ❌ Port 4200 déjà utilisé
+### Port 4200 déjà utilisé
 
 **Solution** :
 ```bash
@@ -222,7 +222,7 @@ taskkill /PID <PID> /F
 ng serve --port 4201
 ```
 
-### ❌ Docker compose ne démarre pas
+### Docker compose ne démarre pas
 
 **Solution** :
 ```bash
@@ -238,7 +238,7 @@ docker-compose up -d
 
 ---
 
-## 📊 Architecture
+## Architecture
 
 ```
 Notes App (localhost:4200)
@@ -267,7 +267,7 @@ Notes App (localhost:4200)
 
 ---
 
-## 🔐 Comptes Par Défaut
+##  Comptes Par Défaut
 
 **Admin** (créé automatiquement) :
 ```
@@ -280,7 +280,7 @@ Rôle: ROLE_ADMIN
 
 ---
 
-## 📝 Notes
+## Notes
 
 - `ddl-auto: create-drop` = BDD recréée à chaque démarrage (dev seulement)
 - Pour production : changez en `validate` ou `update`
@@ -288,9 +288,9 @@ Rôle: ROLE_ADMIN
 
 ---
 
-## ✅ Prochaines Étapes
+##  Prochaines Étapes
 
-1. ✅ Tests manuels (comme expliqué ci-dessus)
+1. Tests manuels (comme expliqué ci-dessus)
 2. Tests E2E Cypress
 3. Déployer sur serveur production
 4. Configurer HTTPS + Reverse Proxy (Nginx/Apache)
