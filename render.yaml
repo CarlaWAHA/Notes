@@ -4,7 +4,7 @@ services:
     runtime: docker
     region: frankfurt
     plan: free
-    branch: master
+    branch: main
     dockerfilePath: ./demo/Dockerfile
     dockerContext: ./demo
     healthCheckPath: /actuator/health/liveness
@@ -88,7 +88,7 @@ services:
     runtime: docker
     region: frankfurt
     plan: free
-    branch: master
+    branch: main
     dockerfilePath: ./Front/Dockerfile
     dockerContext: ./Front
     healthCheckPath: /health
@@ -114,7 +114,7 @@ services:
     runtime: docker
     region: frankfurt
     plan: free
-    branch: master
+    branch: main
     dockerfilePath: ./monitoring/prometheus/Dockerfile
     dockerContext: ./monitoring
     healthCheckPath: /-/healthy
@@ -138,7 +138,7 @@ services:
     runtime: docker
     region: frankfurt
     plan: free
-    branch: master
+    branch: main
     dockerfilePath: ./monitoring/grafana/Dockerfile
     dockerContext: ./monitoring
     healthCheckPath: /api/health
@@ -173,7 +173,7 @@ services:
     runtime: docker
     region: frankfurt
     plan: free
-    branch: master
+    branch: main
     dockerfilePath: ./monitoring/jaeger/Dockerfile
     dockerContext: ./monitoring
     healthCheckPath: /
