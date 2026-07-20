@@ -55,7 +55,7 @@ services:
           envVarKey: RENDER_EXTERNAL_URL
 
       - key: OTEL_EXPORTER_OTLP_ENDPOINT
-        value: http://notes-jaeger:4318/v1/traces
+        value: https://notes-jaeger.onrender.com/v1/traces
 
       - key: METRICS_APPLICATION_NAME
         value: notes-backend
