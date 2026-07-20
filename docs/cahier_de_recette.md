@@ -171,29 +171,6 @@ Dans Prometheus / Grafana, les métriques suivantes sont les plus utiles:
 - [ ] Attribution de notes OK
 - [ ] Vue étudiant cohérente
 
-## 9. Sources de documentation officielles importantes
-
-- Angular: https://angular.dev/
-- Angular CLI: https://angular.dev/tools/cli
-- Spring Boot: https://docs.spring.io/spring-boot/
-- Spring Security: https://docs.spring.io/spring-security/reference/
-- Spring Data JPA: https://docs.spring.io/spring-data/jpa/reference/
-- Hibernate ORM: https://hibernate.org/orm/documentation/
-- PostgreSQL: https://www.postgresql.org/docs/
-- Docker: https://docs.docker.com/
-- Docker Compose: https://docs.docker.com/compose/
-- Render: https://docs.render.com/
-- Grafana: https://grafana.com/docs/grafana/latest/
-- Grafana Prometheus datasource: https://grafana.com/docs/grafana/latest/datasources/prometheus/
-- Prometheus: https://prometheus.io/docs/introduction/overview/
-- Jaeger: https://www.jaegertracing.io/docs/
-- OpenTelemetry: https://opentelemetry.io/docs/
-- Swagger / OpenAPI: https://swagger.io/specification/
-- JUnit 5: https://junit.org/junit5/docs/current/user-guide/
-- Mockito: https://site.mockito.org/
-- Cypress: https://docs.cypress.io/
-- K6: https://grafana.com/docs/k6/latest/
-
 ## 10. Résultat attendu de fin de recette
 
 Le système est considéré validé lorsque:
