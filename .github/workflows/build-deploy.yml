@@ -64,7 +64,7 @@ jobs:
 
       - name: Upload Backend Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-test-reports
           path: demo/target/surefire-reports/
@@ -139,7 +139,7 @@ jobs:
 
       - name: Upload Frontend Coverage
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
           path: Front/coverage/
@@ -147,7 +147,7 @@ jobs:
 
       - name: Upload E2E Screenshots
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
           path: Front/cypress/screenshots/
