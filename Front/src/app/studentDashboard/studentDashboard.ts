@@ -66,6 +66,20 @@ import { UE } from '../models/ue';
             </div>
           </div>
 
+          <div class="bg-white rounded-lg shadow-md p-6 border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-900 mb-4">Cours assignes par l'admin</h2>
+
+            <div *ngIf="assignedCourses.length === 0" class="text-center py-8">
+              <p class="text-slate-600">Aucun cours n'est encore affecte a votre profil.</p>
+            </div>
+
+            <div *ngIf="assignedCourses.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div *ngFor="let courseTitle of assignedCourses" class="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                <p class="font-semibold text-emerald-900">{{ courseTitle }}</p>
+              </div>
+            </div>
+          </div>
+
           <!-- Selected UE Details -->
           <div *ngIf="selectedUE" class="bg-white rounded-lg shadow-md p-6 border border-slate-200">
             <h2 class="text-xl font-bold text-slate-900 mb-4">
@@ -142,6 +156,7 @@ export class StudentDashboardComponent implements OnInit {
   isLoading: boolean = true;
   currentUsername: string = '';
   studentUEs: UE[] = [];
+  assignedCourses: string[] = [];
   grades: Grade[] = [];
   selectedUE: UE | null = null;
 
@@ -157,24 +172,26 @@ export class StudentDashboardComponent implements OnInit {
     }
 
     const roles = localStorage.getItem('roles');
-    const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
 
     if (!roles?.includes('ROLE_STUDENT')) {
       window.location.href = '/';
     }
 
-    if (userId) {
-      this.currentUsername = username || 'Étudiant';
-      this.loadStudentData(parseInt(userId));
-    }
+    this.currentUsername = username || 'Etudiant';
+    this.loadStudentData();
   }
 
-  loadStudentData(userId: number): void {
-    this.studentService.getStudentById(userId).subscribe({
+  loadStudentData(): void {
+    this.studentService.getMyProfile().subscribe({
       next: (student) => {
         this.studentUEs = student.ues || [];
-        this.loadGrades(student.id!);
+        this.assignedCourses = student.courseTitles || [];
+        if (student.id) {
+          this.loadGrades(student.id);
+        } else {
+          this.isLoading = false;
+        }
       },
       error: (err) => {
         console.error('Erreur lors du chargement des données étudiant', err);

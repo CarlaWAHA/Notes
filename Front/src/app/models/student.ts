@@ -4,4 +4,5 @@ export interface Student {
   id?: number;
   user?: any;
   ues?: UE[];
+  courseTitles?: string[];
 }

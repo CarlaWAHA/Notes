@@ -55,7 +55,7 @@ services:
           envVarKey: RENDER_EXTERNAL_URL
 
       - key: OTEL_EXPORTER_OTLP_ENDPOINT
-        value: http://notes-tempo:4318/v1/traces
+        value: http://notes-jaeger:4318/v1/traces
 
       - key: METRICS_APPLICATION_NAME
         value: notes-backend
@@ -157,10 +157,10 @@ services:
           name: notes-prometheus
           envVarKey: RENDER_EXTERNAL_URL
 
-      - key: TEMPO_URL
+      - key: JAEGER_URL
         fromService:
           type: web
-          name: notes-tempo
+          name: notes-jaeger
           envVarKey: RENDER_EXTERNAL_URL
 
     buildFilter:
@@ -169,14 +169,14 @@ services:
         - render.yaml
 
   - type: web
-    name: notes-tempo
+    name: notes-jaeger
     runtime: docker
     region: frankfurt
     plan: free
     branch: master
-    dockerfilePath: ./monitoring/tempo/Dockerfile
+    dockerfilePath: ./monitoring/jaeger/Dockerfile
     dockerContext: ./monitoring
-    healthCheckPath: /ready
+    healthCheckPath: /
     autoDeployTrigger: checksPass
 
     buildFilter:

@@ -8,12 +8,7 @@ datasources:
     isDefault: true
     jsonData:
       timeInterval: 30s
-  - name: Tempo
-    type: tempo
+  - name: Jaeger
+    type: jaeger
     access: proxy
-    url: __TEMPO_URL__
-    jsonData:
-      nodeGraph:
-        enabled: true
-      search:
-        hide: false
+    url: __JAEGER_URL__

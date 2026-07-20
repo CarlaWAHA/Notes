@@ -41,7 +41,8 @@ public class AdminStudentController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Student username already exists");
         }
 
-        Optional<Student> createdStudent = studentService.createStudent(createdUser.get(), request.getUeCodes());
+        List<String> courseTitles = request.getCourseTitles() == null ? List.of() : request.getCourseTitles();
+        Optional<Student> createdStudent = studentService.createStudent(createdUser.get(), request.getUeCodes(), courseTitles);
         if (createdStudent.isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create student");
         }
@@ -86,7 +87,8 @@ public class AdminStudentController {
             return ResponseEntity.badRequest().body("Username already exists");
         }
 
-        Optional<Student> updatedStudent = studentService.replaceStudentUEs(id, request.getUeCodes());
+        List<String> courseTitles = request.getCourseTitles() == null ? List.of() : request.getCourseTitles();
+        Optional<Student> updatedStudent = studentService.replaceStudentAssignments(id, request.getUeCodes(), courseTitles);
         return updatedStudent
             .<ResponseEntity<?>>map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.badRequest().body("Unable to update student UEs"));
@@ -119,6 +121,7 @@ public class AdminStudentController {
         private String username;
         private String password;
         private List<String> ueCodes;
+        private List<String> courseTitles;
 
         public String getUsername() {
             return username;
@@ -142,6 +145,14 @@ public class AdminStudentController {
 
         public void setUeCodes(List<String> ueCodes) {
             this.ueCodes = ueCodes;
+        }
+
+        public List<String> getCourseTitles() {
+            return courseTitles;
+        }
+
+        public void setCourseTitles(List<String> courseTitles) {
+            this.courseTitles = courseTitles;
         }
     }
 
@@ -149,6 +160,7 @@ public class AdminStudentController {
         private String username;
         private String password;
         private List<String> ueCodes;
+        private List<String> courseTitles;
 
         public String getUsername() {
             return username;
@@ -172,6 +184,14 @@ public class AdminStudentController {
 
         public void setUeCodes(List<String> ueCodes) {
             this.ueCodes = ueCodes;
+        }
+
+        public List<String> getCourseTitles() {
+            return courseTitles;
+        }
+
+        public void setCourseTitles(List<String> courseTitles) {
+            this.courseTitles = courseTitles;
         }
     }
 }

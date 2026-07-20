@@ -26,6 +26,10 @@ public class StudentService {
     }
 
     public Optional<Student> createStudent(User user, List<String> ueCodes) {
+        return createStudent(user, ueCodes, List.of());
+    }
+
+    public Optional<Student> createStudent(User user, List<String> ueCodes, List<String> courseTitles) {
         Student student = new Student(user);
         
         for (String ueCode : ueCodes) {
@@ -33,6 +37,10 @@ public class StudentService {
             if (ue.isPresent()) {
                 student.addUE(ue.get());
             }
+        }
+
+        for (String courseTitle : courseTitles) {
+            student.addCourseTitle(courseTitle);
         }
         
         Student savedStudent = studentRepository.save(student);
@@ -76,6 +84,10 @@ public class StudentService {
     }
 
     public Optional<Student> replaceStudentUEs(Long studentId, List<String> ueCodes) {
+        return replaceStudentAssignments(studentId, ueCodes, List.of());
+    }
+
+    public Optional<Student> replaceStudentAssignments(Long studentId, List<String> ueCodes, List<String> courseTitles) {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) {
             return Optional.empty();
@@ -92,7 +104,18 @@ public class StudentService {
         }
 
         student.setUes(updatedUes);
+        Set<String> updatedCourseTitles = new java.util.HashSet<>();
+        for (String courseTitle : courseTitles) {
+            if (courseTitle != null && !courseTitle.isBlank()) {
+                updatedCourseTitles.add(courseTitle.trim());
+            }
+        }
+        student.setCourseTitles(updatedCourseTitles);
         return Optional.of(studentRepository.save(student));
+    }
+
+    public Optional<Student> findByUsername(String username) {
+        return studentRepository.findByUserUsername(username);
     }
 
     public boolean deleteStudent(Long studentId) {

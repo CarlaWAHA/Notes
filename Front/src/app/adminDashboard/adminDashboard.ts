@@ -1,12 +1,13 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { StudentService } from '../Services/studentService';
 import { GradeService } from '../Services/gradeService';
 import { UEService } from '../Services/ueService';
+import { noteService } from '../Services/note.service';
 import { Student } from '../models/student';
 import { UE } from '../models/ue';
+import { NoteModel } from '../models/note';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -44,7 +45,45 @@ import { UE } from '../models/ue';
         <section *ngIf="activeTab === 'manage-students'" class="rounded-2xl border border-red-200 bg-white p-6 shadow-sm">
           <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 class="text-2xl font-black text-black">Gestion des Etudiants</h2>
-            <button (click)="goToCreateStudent()" class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white hover:bg-black">Ajouter un etudiant</button>
+          </div>
+
+          <div class="mb-6 rounded-xl border border-red-200 bg-red-50/40 p-5">
+            <h3 class="text-lg font-bold text-black">Ajouter un etudiant</h3>
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold">Username</label>
+                <input [(ngModel)]="createUsername" type="text" class="w-full rounded-lg border border-red-200 bg-white px-3 py-2 outline-none focus:border-red-500" />
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-semibold">Mot de passe</label>
+                <input [(ngModel)]="createPassword" type="password" class="w-full rounded-lg border border-red-200 bg-white px-3 py-2 outline-none focus:border-red-500" />
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <p class="mb-2 text-sm font-semibold">UE affectees</p>
+              <div class="grid gap-2 md:grid-cols-2">
+                <label *ngFor="let ue of availableUEs" class="flex items-center gap-2 rounded-lg border border-red-100 bg-white px-3 py-2 text-sm">
+                  <input type="checkbox" [checked]="isUESelectedInCreate(ue.code)" (change)="toggleUEInCreate(ue.code, $any($event.target).checked)" />
+                  <span>{{ ue.code }} - {{ ue.titre }}</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <p class="mb-2 text-sm font-semibold">Cours admin affectes</p>
+              <div class="grid gap-2 md:grid-cols-2">
+                <label *ngFor="let course of availableCourses" class="flex items-center gap-2 rounded-lg border border-red-100 bg-white px-3 py-2 text-sm">
+                  <input type="checkbox" [checked]="isCourseSelectedInCreate(course.title)" (change)="toggleCourseInCreate(course.title, $any($event.target).checked)" />
+                  <span>{{ course.title }}</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mt-4 flex gap-2">
+              <button (click)="createStudentInline()" class="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white hover:bg-black">Creer l'etudiant</button>
+              <button (click)="resetCreateForm()" class="rounded-lg border border-black px-4 py-2 font-semibold hover:border-red-600 hover:text-red-600">Reinitialiser</button>
+            </div>
           </div>
 
           <div class="overflow-x-auto">
@@ -54,6 +93,7 @@ import { UE } from '../models/ue';
                   <th class="px-4 py-3">ID</th>
                   <th class="px-4 py-3">Username</th>
                   <th class="px-4 py-3">UE</th>
+                  <th class="px-4 py-3">Cours</th>
                   <th class="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -65,6 +105,12 @@ import { UE } from '../models/ue';
                     <span *ngIf="(student.ues || []).length === 0" class="text-sm text-neutral-500">Aucune UE</span>
                     <span *ngFor="let ue of student.ues; let last = last" class="text-sm">
                       {{ ue.code }}<span *ngIf="!last">, </span>
+                    </span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span *ngIf="(student.courseTitles || []).length === 0" class="text-sm text-neutral-500">Aucun cours</span>
+                    <span *ngFor="let title of student.courseTitles; let last = last" class="text-sm">
+                      {{ title }}<span *ngIf="!last">, </span>
                     </span>
                   </td>
                   <td class="px-4 py-3">
@@ -98,6 +144,16 @@ import { UE } from '../models/ue';
                 <label *ngFor="let ue of availableUEs" class="flex items-center gap-2 rounded-lg border border-red-100 bg-white px-3 py-2 text-sm">
                   <input type="checkbox" [checked]="isUESelectedInEdit(ue.code)" (change)="toggleUEInEdit(ue.code, $any($event.target).checked)" />
                   <span>{{ ue.code }} - {{ ue.titre }}</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <p class="mb-2 text-sm font-semibold">Cours admin affectes</p>
+              <div class="grid gap-2 md:grid-cols-2">
+                <label *ngFor="let course of availableCourses" class="flex items-center gap-2 rounded-lg border border-red-100 bg-white px-3 py-2 text-sm">
+                  <input type="checkbox" [checked]="isCourseSelectedInEdit(course.title)" (change)="toggleCourseInEdit(course.title, $any($event.target).checked)" />
+                  <span>{{ course.title }}</span>
                 </label>
               </div>
             </div>
@@ -194,16 +250,22 @@ import { UE } from '../models/ue';
 })
 export class AdminDashboardComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly router = inject(Router);
 
   activeTab: 'manage-students' | 'manage-ues' | 'assign-grades' = 'manage-students';
   students: Student[] = [];
   availableUEs: UE[] = [];
+  availableCourses: NoteModel[] = [];
+
+  createUsername = '';
+  createPassword = '';
+  createUeCodes: string[] = [];
+  createCourseTitles: string[] = [];
 
   editingStudentId: number | null = null;
   editUsername = '';
   editPassword = '';
   editUeCodes: string[] = [];
+  editCourseTitles: string[] = [];
 
   ueCode = '';
   ueTitle = '';
@@ -222,10 +284,12 @@ export class AdminDashboardComponent implements OnInit {
   constructor(
     private studentService: StudentService,
     private gradeService: GradeService,
-    private ueService: UEService
+    private ueService: UEService,
+    private notesService: noteService
   ) {
     this.loadStudents();
     this.loadUEs();
+    this.loadCourses();
   }
 
   ngOnInit(): void {
@@ -263,8 +327,76 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  goToCreateStudent(): void {
-    this.router.navigate(['/admin/students/new']);
+  loadCourses(): void {
+    this.notesService.getAllNotes().subscribe({
+      next: (data) => {
+        this.availableCourses = data;
+      },
+      error: () => {
+        this.availableCourses = [];
+      }
+    });
+  }
+
+  isUESelectedInCreate(code: string): boolean {
+    return this.createUeCodes.includes(code);
+  }
+
+  toggleUEInCreate(code: string, checked: boolean): void {
+    if (checked && !this.createUeCodes.includes(code)) {
+      this.createUeCodes.push(code);
+      return;
+    }
+
+    if (!checked) {
+      this.createUeCodes = this.createUeCodes.filter((value) => value !== code);
+    }
+  }
+
+  isCourseSelectedInCreate(title: string): boolean {
+    return this.createCourseTitles.includes(title);
+  }
+
+  toggleCourseInCreate(title: string, checked: boolean): void {
+    if (checked && !this.createCourseTitles.includes(title)) {
+      this.createCourseTitles.push(title);
+      return;
+    }
+
+    if (!checked) {
+      this.createCourseTitles = this.createCourseTitles.filter((value) => value !== title);
+    }
+  }
+
+  resetCreateForm(): void {
+    this.createUsername = '';
+    this.createPassword = '';
+    this.createUeCodes = [];
+    this.createCourseTitles = [];
+  }
+
+  createStudentInline(): void {
+    if (!this.createUsername.trim() || !this.createPassword.trim() || this.createUeCodes.length === 0) {
+      this.uiMessage = 'Username, mot de passe et au moins une UE sont obligatoires.';
+      return;
+    }
+
+    this.studentService.createStudent({
+      username: this.createUsername.trim(),
+      password: this.createPassword,
+      ueCodes: this.createUeCodes,
+      courseTitles: this.createCourseTitles
+    }).subscribe({
+      next: () => {
+        this.uiMessage = 'Etudiant cree avec succes.';
+        this.resetCreateForm();
+        this.loadStudents();
+      },
+      error: (err) => {
+        console.error('Erreur creation etudiant', err);
+        this.uiMessage = err?.error || 'Impossible de creer cet etudiant.';
+      }
+    });
   }
 
   startEditStudent(student: Student): void {
@@ -272,6 +404,7 @@ export class AdminDashboardComponent implements OnInit {
     this.editUsername = student.user?.username || '';
     this.editPassword = '';
     this.editUeCodes = (student.ues || []).map((ue) => ue.code);
+    this.editCourseTitles = [...(student.courseTitles || [])];
     this.uiMessage = '';
   }
 
@@ -280,6 +413,7 @@ export class AdminDashboardComponent implements OnInit {
     this.editUsername = '';
     this.editPassword = '';
     this.editUeCodes = [];
+    this.editCourseTitles = [];
   }
 
   isUESelectedInEdit(code: string): boolean {
@@ -297,6 +431,21 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
+  isCourseSelectedInEdit(title: string): boolean {
+    return this.editCourseTitles.includes(title);
+  }
+
+  toggleCourseInEdit(title: string, checked: boolean): void {
+    if (checked && !this.editCourseTitles.includes(title)) {
+      this.editCourseTitles.push(title);
+      return;
+    }
+
+    if (!checked) {
+      this.editCourseTitles = this.editCourseTitles.filter((value) => value !== title);
+    }
+  }
+
   saveStudentEdit(): void {
     if (!this.editingStudentId) {
       return;
@@ -310,7 +459,8 @@ export class AdminDashboardComponent implements OnInit {
     this.studentService.updateStudent(this.editingStudentId, {
       username: this.editUsername.trim(),
       password: this.editPassword.trim() || undefined,
-      ueCodes: this.editUeCodes
+      ueCodes: this.editUeCodes,
+      courseTitles: this.editCourseTitles
     }).subscribe({
       next: () => {
         this.uiMessage = 'Etudiant mis a jour avec succes.';
@@ -374,6 +524,7 @@ export class AdminDashboardComponent implements OnInit {
         this.uiMessage = this.editingUEId ? 'UE mise a jour.' : 'UE creee.';
         this.resetUEForm();
         this.loadUEs();
+        this.loadCourses();
         this.loadStudents();
       },
       error: (err) => {

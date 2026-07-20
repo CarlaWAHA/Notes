@@ -1,30 +1,33 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Note;
+import com.example.demo.repository.NoteRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class NoteService {
-    private final List<Note> notes = new ArrayList<>();
-    private final AtomicLong idGenerator = new AtomicLong(1);
+    private final NoteRepository noteRepository;
+
+    public NoteService(NoteRepository noteRepository) {
+        this.noteRepository = noteRepository;
+    }
 
     public List<Note> getAllNotes() {
-        return new ArrayList<>(notes);
+        return noteRepository.findAll();
     }
 
     public Optional<Note> getNoteById(Long id) {
-        return notes.stream().filter(note -> note.getId().equals(id)).findFirst();
+        return noteRepository.findById(id);
     }
 
     public Note createNote(String title, String content) {
-        Note note = new Note(idGenerator.getAndIncrement(), title, content);
-        notes.add(note);
-        return note;
+        Note note = new Note();
+        note.setTitle(title);
+        note.setContent(content);
+        return noteRepository.save(note);
     }
 
     public Optional<Note> updateNote(Long id, String title, String content) {
@@ -36,10 +39,15 @@ public class NoteService {
         Note note = existing.get();
         note.setTitle(title);
         note.setContent(content);
-        return Optional.of(note);
+        return Optional.of(noteRepository.save(note));
     }
 
     public boolean deleteNote(Long id) {
-        return notes.removeIf(note -> note.getId().equals(id));
+        if (!noteRepository.existsById(id)) {
+            return false;
+        }
+
+        noteRepository.deleteById(id);
+        return true;
     }
 }

@@ -25,6 +25,11 @@ public class Student {
     )
     private Set<UE> ues = new HashSet<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "student_courses", joinColumns = @JoinColumn(name = "student_id"))
+    @Column(name = "course_title", nullable = false)
+    private Set<String> courseTitles = new HashSet<>();
+
     protected Student() {
         // Required by JPA
     }
@@ -69,5 +74,23 @@ public class Student {
 
     public void removeUE(UE ue) {
         this.ues.remove(ue);
+    }
+
+    public Set<String> getCourseTitles() {
+        return courseTitles;
+    }
+
+    public void setCourseTitles(Set<String> courseTitles) {
+        this.courseTitles = courseTitles;
+    }
+
+    public void addCourseTitle(String courseTitle) {
+        if (courseTitle != null && !courseTitle.isBlank()) {
+            this.courseTitles.add(courseTitle.trim());
+        }
+    }
+
+    public void removeCourseTitle(String courseTitle) {
+        this.courseTitles.remove(courseTitle);
     }
 }
